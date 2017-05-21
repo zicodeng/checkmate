@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
         // Set "Tasks Navigation Fragment" as default
         TasksNavigationFragment tasksNavigationFragment = TasksNavigationFragment.newInstance();
         ft = fm.beginTransaction();
-        ft.replace(R.id.top_navigation, tasksNavigationFragment, "Tasks_Navigation_Fragment");
+        ft.replace(R.id.container, tasksNavigationFragment, "Tasks_Navigation_Fragment");
         ft.commit();
     }
-
 }
