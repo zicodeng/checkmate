@@ -20,21 +20,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.navigation_shopping:
 
                     return true;
 
-                case R.id.navigation_dashboard:
+                case R.id.navigation_tasks:
 
                     return true;
 
-                case R.id.navigation_notifications:
+                case R.id.navigation_announcement:
 
                     return true;
             }
             return false;
         }
-
     };
 
     @Override
@@ -53,5 +52,7 @@ public class MainActivity extends AppCompatActivity {
         ft = fm.beginTransaction();
         ft.replace(R.id.container, tasksFragment, "Tasks_Fragment");
         ft.commit();
+
+        navigation.getMenu().getItem(1).setChecked(true);
     }
 }
