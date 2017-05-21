@@ -1,7 +1,6 @@
 package edu.uw.dengz6.checkmate;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 
 /**
@@ -21,14 +19,12 @@ public class TasksFragment extends Fragment  {
 
     public static final String TAG = "Tasks_Fragment";
 
-    private TextView navItemAllTasks;
-    private TextView navItemMyTasks;
-    private TextView navItemCompleted;
-
     // Pager
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
     private android.app.ActionBar actionBar;
+
+    // Fragments
 
     // Top navigation tab title
     private String[] tabs = {"All Tasks", "My Tasks", "Completed"};
@@ -53,18 +49,13 @@ public class TasksFragment extends Fragment  {
 
         // Initialize ViewPager
         viewPager = (ViewPager) rootView.findViewById(R.id.pager_tasks);
-        pagerAdapter = new TasksPagerAdapter(getFragmentManager());
+        // We have to use "Child Fragment Manager" because we are targeting nested fragments
+        pagerAdapter = new TasksPagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(pagerAdapter);
+
 
         // Inflate the layout for this fragment
         return rootView;
-    }
-
-    private void resetColor() {
-        // Remove primary color and reset top navigation items to white
-        navItemAllTasks.setTextColor(Color.parseColor("#FFFFFF"));
-        navItemMyTasks.setTextColor(Color.parseColor("#FFFFFF"));
-        navItemCompleted.setTextColor(Color.parseColor("#FFFFFF"));
     }
 
     private class TasksPagerAdapter extends FragmentPagerAdapter {
