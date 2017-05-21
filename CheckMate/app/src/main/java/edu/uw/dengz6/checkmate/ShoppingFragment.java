@@ -11,18 +11,18 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyTasksFragment extends Fragment {
+public class ShoppingFragment extends Fragment {
 
 
-    public MyTasksFragment() {
+    public ShoppingFragment() {
         // Required empty public constructor
     }
 
-    public static MyTasksFragment newInstance() {
-        
+    public static ShoppingFragment newInstance() {
+
         Bundle args = new Bundle();
-        
-        MyTasksFragment fragment = new MyTasksFragment();
+
+        ShoppingFragment fragment = new ShoppingFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -32,6 +32,7 @@ public class MyTasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_tasks, container, false);
+        return inflater.inflate(R.layout.fragment_shopping, container, false);
     }
+
 }

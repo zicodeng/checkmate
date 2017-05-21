@@ -4,11 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.uw.dengz6.checkmate.TasksFragment"
+    tools:context="edu.uw.dengz6.checkmate.ShoppingFragment"
     >
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/pager_tasks"
+        android:id="@+id/pager_shopping"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

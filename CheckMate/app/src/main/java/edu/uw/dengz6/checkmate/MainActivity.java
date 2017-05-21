@@ -22,13 +22,25 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_shopping:
 
+                    // Change to "Shopping Fragment"
+                    ShoppingFragment shoppingFragment = ShoppingFragment.newInstance();
+                    ft = fm.beginTransaction();
+                    ft.replace(R.id.container, shoppingFragment, "Shopping_Fragment");
+                    ft.commit();
                     return true;
 
                 case R.id.navigation_tasks:
 
+                    // Change to "Tasks Fragment"
+                    TasksFragment tasksFragment = TasksFragment.newInstance();
+                    ft = fm.beginTransaction();
+                    ft.replace(R.id.container, tasksFragment, "Tasks_Fragment");
+                    ft.commit();
                     return true;
 
                 case R.id.navigation_announcement:
+
+                    // Change to "Announcement Fragment"
 
                     return true;
             }

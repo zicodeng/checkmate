@@ -78,15 +78,15 @@ public class TasksFragment extends Fragment  {
 
             // Define the page order
             if (position == 0) {
-                return new AllTasksFragment();
+                return AllTasksFragment.newInstance();
             }
 
             if (position == 1) {
-                return new MyTasksFragment();
+                return MyTasksFragment.newInstance();
             }
 
             if (position == 2) {
-                return new CompletedFragment();
+                return CompletedFragment.newInstance();
             }
 
             return null;
