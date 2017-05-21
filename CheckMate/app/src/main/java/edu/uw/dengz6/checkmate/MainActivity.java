@@ -48,10 +48,10 @@ public class MainActivity extends AppCompatActivity {
         // Initialize FragmentManager
         fm = getSupportFragmentManager();
 
-        // Set "Tasks Navigation Fragment" as default
-        TasksNavigationFragment tasksNavigationFragment = TasksNavigationFragment.newInstance();
+        // Set "Tasks Fragment" as default
+        TasksFragment tasksFragment = TasksFragment.newInstance();
         ft = fm.beginTransaction();
-        ft.replace(R.id.container, tasksNavigationFragment, "Tasks_Navigation_Fragment");
+        ft.replace(R.id.container, tasksFragment, "Tasks_Fragment");
         ft.commit();
     }
 }
