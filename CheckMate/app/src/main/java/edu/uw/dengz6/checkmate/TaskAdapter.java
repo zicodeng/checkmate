@@ -8,10 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
- * An custom array adapter for Task Object
+ * An custom array adapter for TaskData Object
  */
 
 public class TaskAdapter extends ArrayAdapter<TaskAdapter.TaskData> {
@@ -19,12 +18,12 @@ public class TaskAdapter extends ArrayAdapter<TaskAdapter.TaskData> {
     public static class TaskData {
         public String title;
         public String details;
-        public Date dueOn;
-        public Date createdOn;
+        public String dueOn;
+        public String createdOn;
         public String assigner;
         public String assignee;
 
-        public TaskData(String title, String details, Date dueOn, Date createdOn, String assigner, String assignee) {
+        public TaskData(String title, String details, String dueOn, String createdOn, String assigner, String assignee) {
             this.title = title;
             this.details = details;
             this.dueOn = dueOn;

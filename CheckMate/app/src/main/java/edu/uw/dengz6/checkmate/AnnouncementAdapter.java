@@ -8,16 +8,19 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Date;
 
+/**
+ * An custom array adapter for AnnouncementData Object
+ */
 public class AnnouncementAdapter extends ArrayAdapter<AnnouncementAdapter.AnnouncementData> {
+
 
     public static class AnnouncementData {
         public String content;
         public String createdBy;
-        public Date createdOn;
+        public String createdOn;
 
-        public AnnouncementData(String content, Date createdOn, String createdBy) {
+        public AnnouncementData(String content, String createdOn, String createdBy) {
             this.content = content;
             this.createdOn = createdOn;
             this.createdBy = createdBy;
@@ -54,9 +57,8 @@ public class AnnouncementAdapter extends ArrayAdapter<AnnouncementAdapter.Announ
         }
 
         holder.content.setText(data.content);
-        String metaText = data.createdBy + data.createdOn;
+        String metaText = data.createdBy + " "+ data.createdOn;
         holder.meta.setText(metaText);
-
         // Return the completed view to render on screen
         return convertView;
     }
