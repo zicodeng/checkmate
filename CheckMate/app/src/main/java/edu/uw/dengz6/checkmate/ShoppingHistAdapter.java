@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * An custom array adapter for ShoppingHist Object
+ * A custom array adapter for ShoppingHist Object
  */
 
 public class ShoppingHistAdapter extends ArrayAdapter<ShoppingHistAdapter.ShoppingHistData> {

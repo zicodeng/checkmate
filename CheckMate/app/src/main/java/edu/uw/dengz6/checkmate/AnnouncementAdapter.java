@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * An custom array adapter for AnnouncementData Object
+ * A custom array adapter for AnnouncementData Object
  */
 public class AnnouncementAdapter extends ArrayAdapter<AnnouncementAdapter.AnnouncementData> {
 

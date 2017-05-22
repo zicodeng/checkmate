@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * An custom array adapter for TaskData Object
+ * A custom array adapter for TaskData Object
  */
 
 public class TaskAdapter extends ArrayAdapter<TaskAdapter.TaskData> {
