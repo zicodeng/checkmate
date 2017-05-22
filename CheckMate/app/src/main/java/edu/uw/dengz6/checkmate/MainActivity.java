@@ -41,7 +41,10 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_announcement:
 
                     // Change to "Announcement Fragment"
-
+                    AnnouncementFragment announcementFragment = AnnouncementFragment.newInstance();
+                    ft = fm.beginTransaction();
+                    ft.replace(R.id.container, announcementFragment, "Shopping_Fragment");
+                    ft.commit();
                     return true;
             }
             return false;
