@@ -75,8 +75,7 @@ public class SignupActivity extends AppCompatActivity {
         final String password = _passwordText.getText().toString();
         final String groupName = _groupText.getText().toString();
 
-        // TODO: Implement your own signup logic here.
-        //Insert the group and load a new activity ?
+        //set up firebase before using
         Firebase.setAndroidContext(this);
         Firebase groupRef = new Firebase(FIREBASER_URL);
         groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -107,6 +106,7 @@ public class SignupActivity extends AppCompatActivity {
                                             Firebase userRef = ref.child("users");
                                             User user = new User(name, email, password);
                                             Firebase userPush = userRef.push();
+                                            final String userID = userPush.getKey();
                                             userPush.setValue(user, new Firebase.CompletionListener() {
                                                 @Override
                                                 public void onComplete(FirebaseError firebaseError, Firebase firebase) {
@@ -115,19 +115,18 @@ public class SignupActivity extends AppCompatActivity {
                                                     }else{ //if there are no errors then we proceed to adding people into the group
                                                         // On complete call either onSignupSuccess or onSignupFailed
                                                         // depending on success
-                                                        onSignupSuccess(groupName, email, name);
+                                                        onSignupSuccess(groupName, email, name, userID);
                                                     }
                                                 }
                                             });
                                         }
+                                        progressDialog.dismiss();
                                     }
                                 });
-                                progressDialog.dismiss();
                             }
-                        }, 2000);
+                        }, 1500);
                 }
             }
-
             @Override
             public void onCancelled(FirebaseError firebaseError) {
 
@@ -138,19 +137,17 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     //Passing in the group key so we can track which group are we talking about
-    public void onSignupSuccess(String groupName, String email, String userName) {
+    public void onSignupSuccess(String groupName, String email, String userName, String userID) {
         _signupButton.setEnabled(false);
         setResult(RESULT_OK, null);
-        sessionManager.createLoginSession(userName, email);
+        sessionManager.createLoginSession(userName, email, userID, groupName);
         Intent intent = new Intent(getApplicationContext(), AddMembersActivity.class);
         intent.putExtra("group_id", groupName);
         startActivityForResult(intent, 0);
-        //finish();
     }
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
-
         _signupButton.setEnabled(true);
     }
 
@@ -166,7 +163,6 @@ public class SignupActivity extends AppCompatActivity {
         } else {
             _groupText.setError(null);
         }
-
         if (name.isEmpty() || name.length() < 3) {
             _nameText.setError("at least 3 characters");
             valid = false;

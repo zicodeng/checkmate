@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                     userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(lookForUser((Map<String,Object>) dataSnapshot.getValue(), email, password)){
+                            if(lookForUser((Map<String,Object>) dataSnapshot.getValue(), email, password, groupName)){
                                 Toast.makeText(LoginActivity.this, "successful authentication ", Toast.LENGTH_SHORT).show();
                                 new android.os.Handler().postDelayed(
                                         new Runnable() {
@@ -102,8 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                                             }
                                         }, 2000);
                             }else{
-                                //TODO: inform that the log in has failed
-                                Toast.makeText(LoginActivity.this, "wrong emial and password combination ", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "wrong email and password combination ", Toast.LENGTH_SHORT).show();
                             }
                         }
                         @Override
@@ -125,15 +124,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //Method look for user in the user property of the group
-    public boolean lookForUser(Map<String, Object> data, String email, String password){
+    public boolean lookForUser(Map<String, Object> data, String email, String password, String groupName){
         for (Map.Entry<String, Object> entry : data.entrySet()){
 
             //Get user map
             Map singleUser = (Map) entry.getValue();
             //Get phone field and append to list
+            String userID = entry.getKey();
             if(email.equals((String) singleUser.get("email"))){
                 if(password.equals((String) singleUser.get("password"))){
-                    session.createLoginSession((String) singleUser.get("name"), (String) singleUser.get("email"));
+                    session.createLoginSession((String) singleUser.get("name"), (String) singleUser.get("email"), userID, groupName);
                     return true;
                 }
             }
@@ -145,9 +145,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
                 this.finish();
             }
         }

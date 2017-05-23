@@ -29,6 +29,12 @@ public class SessionManager {
     // User name (make variable public to access from outside)
     public static final String KEY_NAME = "name";
 
+    //userID
+    public static final String KEY_USER_ID = "userid";
+
+    //group name
+    public static final String KEY_GROUP_NAME = "groupname";
+
     // Email address (make variable public to access from outside)
     public static final String KEY_EMAIL = "email";
 
@@ -39,7 +45,7 @@ public class SessionManager {
         editor = pref.edit();
     }
 
-    public void createLoginSession(String name, String email){
+    public void createLoginSession(String name, String email, String userID, String groupName){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -48,6 +54,12 @@ public class SessionManager {
 
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
+
+        //Storing userID
+        editor.putString(KEY_USER_ID, userID);
+
+        //Storing groupName
+        editor.putString(KEY_GROUP_NAME, groupName);
 
         // commit changes
         editor.commit();
@@ -63,6 +75,12 @@ public class SessionManager {
 
         // user email id
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
+
+        //user userID on firebase
+        user.put(KEY_USER_ID, pref.getString(KEY_USER_ID, null));
+
+        //the group that user belong to
+        user.put(KEY_GROUP_NAME, pref.getString(KEY_GROUP_NAME, null));
 
         // return user
         return user;
