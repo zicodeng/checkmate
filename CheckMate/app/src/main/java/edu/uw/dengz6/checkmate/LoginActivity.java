@@ -23,6 +23,8 @@ import butterknife.InjectView;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+    private final String FIREBASER_URL = "https://checkmate-d2c41.firebaseio.com/groups";
+
     private static final int REQUEST_SIGNUP = 0;
 
     @InjectView(R.id.input_email) EditText _emailText;
@@ -80,13 +82,13 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: Implement your own authentication logic here.
         Firebase.setAndroidContext(this);
-        Firebase groupRef = new Firebase("https://checkmate-d2c41.firebaseio.com/groups");
+        Firebase groupRef = new Firebase(FIREBASER_URL);
         groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChild(groupName)){
                     Toast.makeText(LoginActivity.this, "group found", Toast.LENGTH_SHORT).show();
-                    Firebase userRef = new Firebase("https://checkmate-d2c41.firebaseio.com/groups/"+groupName+"/users");
+                    Firebase userRef = new Firebase(FIREBASER_URL+"/"+groupName+"/users");
                     userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -101,18 +103,16 @@ public class LoginActivity extends AppCompatActivity {
                                         }, 2000);
                             }else{
                                 //TODO: inform that the log in has failed
-                                Toast.makeText(LoginActivity.this, "fail authentication ", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "wrong emial and password combination ", Toast.LENGTH_SHORT).show();
                             }
                         }
-
                         @Override
                         public void onCancelled(FirebaseError firebaseError) {
 
                         }
                     });
                 }else{
-                    Toast.makeText(LoginActivity.this, "doesnt have Child", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(LoginActivity.this, "No group found", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -124,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    //Method look for user in the user property of the group
     public boolean lookForUser(Map<String, Object> data, String email, String password){
         for (Map.Entry<String, Object> entry : data.entrySet()){
 
