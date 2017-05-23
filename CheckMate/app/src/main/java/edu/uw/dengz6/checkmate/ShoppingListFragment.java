@@ -2,28 +2,28 @@ package edu.uw.dengz6.checkmate;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
+import android.support.v4.app.Fragment;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Created by iguest on 5/21/17.
  */
-public class AllTasksFragment extends Fragment {
+
+public class ShoppingListFragment extends Fragment{
 
 
-    public AllTasksFragment() {
+    public ShoppingListFragment() {
         // Required empty public constructor
     }
 
-    public static AllTasksFragment newInstance() {
+    public static ShoppingListFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        AllTasksFragment fragment = new AllTasksFragment();
+        ShoppingListFragment fragment = new ShoppingListFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,14 +34,14 @@ public class AllTasksFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Get root view so we can use it to find its child views later
-        View rootView = inflater.inflate(R.layout.fragment_all_tasks, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
 
-        FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_all_tasks);
+        FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_shopping);
 
         fabAllTasks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Add a New ShoppingList", Toast.LENGTH_SHORT).show();
             }
         });
 

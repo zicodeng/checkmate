@@ -1,5 +1,6 @@
 package edu.uw.dengz6.checkmate;
 
+
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,18 +13,18 @@ import android.widget.Toast;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AllTasksFragment extends Fragment {
+public class AnnouncementFragment extends Fragment {
 
 
-    public AllTasksFragment() {
+    public AnnouncementFragment() {
         // Required empty public constructor
     }
 
-    public static AllTasksFragment newInstance() {
+    public static AnnouncementFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        AllTasksFragment fragment = new AllTasksFragment();
+        AnnouncementFragment fragment = new AnnouncementFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -32,16 +33,15 @@ public class AllTasksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Get root view so we can use it to find its child views later
-        View rootView = inflater.inflate(R.layout.fragment_all_tasks, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_announcement, container, false);
 
-        FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_all_tasks);
+        FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_announcement);
 
         fabAllTasks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Add a New Announcement", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -50,3 +50,4 @@ public class AllTasksFragment extends Fragment {
     }
 
 }
+
