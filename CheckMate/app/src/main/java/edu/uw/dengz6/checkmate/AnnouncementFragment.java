@@ -9,25 +9,33 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
-import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+
+import static android.content.ContentValues.TAG;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class AnnouncementFragment extends Fragment {
-
-
+    public static final String FIREBASE_URL = "https://checkmate-d2c41.firebaseio.com/groups/";
+    protected static SessionManager manager;
+    protected static Firebase announcementRef;
+    protected static HashMap<String, String> userInfo;
     public AnnouncementFragment() {
         // Required empty public constructor
     }
@@ -57,7 +65,24 @@ public class AnnouncementFragment extends Fragment {
                 addNewAnnouncementFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Shopping_List_Fragment");
             }
         });
+        manager = new SessionManager(getContext());
+        userInfo = manager.getUserDetails();
 
+        Firebase.setAndroidContext(getActivity());
+        announcementRef = new Firebase(FIREBASE_URL + userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
+
+        announcementRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    Log.v(TAG, dataSnapshot.getValue().toString());
+                }
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -83,7 +108,7 @@ public class AnnouncementFragment extends Fragment {
             final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
 
             // Set up base firebase URL
-            final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/announcements";
+            final String firebaseURL = FIREBASE_URL + groupName + "/announcements";
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -110,7 +135,7 @@ public class AnnouncementFragment extends Fragment {
                     Firebase.setAndroidContext(getActivity());
 
                     // Establish connection and set current shopping list as base URL
-                    Firebase announcementRef = new Firebase(firebaseURL);
+                    announcementRef = new Firebase(firebaseURL);
 
                     // Create a new shopping list with random ID
                     Firebase newAnnouncement = announcementRef.push();
