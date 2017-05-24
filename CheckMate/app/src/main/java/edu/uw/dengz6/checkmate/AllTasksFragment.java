@@ -3,10 +3,18 @@ package edu.uw.dengz6.checkmate;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.HashMap;
 
 
 /**
@@ -14,15 +22,15 @@ import android.widget.Toast;
  */
 public class AllTasksFragment extends Fragment {
 
+    public static final String FIREBASE_URL = "https://checkmate-d2c41.firebaseio.com/groups/";
 
+    public static final String TAG = "All_Tasks_Fragment";
     public AllTasksFragment() {
         // Required empty public constructor
     }
 
     public static AllTasksFragment newInstance() {
-
         Bundle args = new Bundle();
-
         AllTasksFragment fragment = new AllTasksFragment();
         fragment.setArguments(args);
         return fragment;
@@ -45,8 +53,25 @@ public class AllTasksFragment extends Fragment {
             }
         });
 
+        SessionManager manager = new SessionManager(getContext());
+        HashMap<String, String> userInfo = manager.getUserDetails();
+
+        Firebase.setAndroidContext(getActivity());
+        Firebase taskRef = new Firebase(FIREBASE_URL + userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users");
+        taskRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                 Log.v(TAG, dataSnapshot.getValue().toString());
+
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
         // Inflate the layout for this fragment
         return rootView;
-    }
+    };
 
 }

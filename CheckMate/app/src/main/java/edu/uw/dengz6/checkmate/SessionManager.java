@@ -7,7 +7,7 @@ import android.content.SharedPreferences.Editor;
 
 import java.util.HashMap;
 
-public class SessionManager {
+ public class SessionManager {
     // Shared Preferences
     SharedPreferences pref;
 
