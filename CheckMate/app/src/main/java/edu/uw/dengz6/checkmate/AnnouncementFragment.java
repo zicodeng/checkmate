@@ -4,6 +4,7 @@ package edu.uw.dengz6.checkmate;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,8 @@ public class AnnouncementFragment extends Fragment {
         fabAllTasks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+                EditText mTitle = (EditText) m
                 Toast.makeText(getActivity(), "Add a New Announcement", Toast.LENGTH_SHORT).show();
             }
         });
