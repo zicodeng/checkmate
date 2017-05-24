@@ -12,20 +12,8 @@ import java.util.ArrayList;
 /**
  * A custom array adapter for AnnouncementData Object
  */
-public class AnnouncementAdapter extends ArrayAdapter<AnnouncementAdapter.AnnouncementData> {
+public class AnnouncementAdapter extends ArrayAdapter<AnnouncementData> {
 
-
-    public static class AnnouncementData {
-        public String content;
-        public String createdBy;
-        public String createdOn;
-
-        public AnnouncementData(String content, String createdOn, String createdBy) {
-            this.content = content;
-            this.createdOn = createdOn;
-            this.createdBy = createdBy;
-        }
-    }
 
     public static class ViewHolder {
         TextView content;

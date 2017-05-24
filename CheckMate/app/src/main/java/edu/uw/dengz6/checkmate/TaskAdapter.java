@@ -13,25 +13,8 @@ import java.util.ArrayList;
  * A custom array adapter for TaskData Object
  */
 
-public class TaskAdapter extends ArrayAdapter<TaskAdapter.TaskData> {
+public class TaskAdapter extends ArrayAdapter<TaskData> {
 
-    public static class TaskData {
-        public String title;
-        public String details;
-        public String dueOn;
-        public String createdOn;
-        public String assigner;
-        public String assignee;
-
-        public TaskData(String title, String details, String dueOn, String createdOn, String assigner, String assignee) {
-            this.title = title;
-            this.details = details;
-            this.dueOn = dueOn;
-            this.createdOn = createdOn;
-            this.assigner = assigner;
-            this.assignee = assignee;
-        }
-    }
 
     public static class ViewHolder {
         TextView title;

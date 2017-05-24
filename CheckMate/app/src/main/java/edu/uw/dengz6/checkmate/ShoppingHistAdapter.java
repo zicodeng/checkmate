@@ -14,23 +14,8 @@ import java.util.ArrayList;
  * A custom array adapter for ShoppingHist Object
  */
 
-public class ShoppingHistAdapter extends ArrayAdapter<ShoppingHistAdapter.ShoppingHistData> {
+public class ShoppingHistAdapter extends ArrayAdapter<ShoppingHistData> {
 
-
-    public static class ShoppingHistData {
-        public String member;
-        public String totalCost;
-        public String totalShoppingList;
-        public String since;
-
-
-        public ShoppingHistData(String member, String totalCost, String totalShoppingList, String since) {
-            this.member = member;
-            this.totalCost = totalCost;
-            this.totalShoppingList = totalShoppingList;
-            this.since = since;
-        }
-    }
 
     public static class ViewHolder {
         TextView title;
