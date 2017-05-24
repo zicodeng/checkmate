@@ -24,8 +24,6 @@ public class ShoppingFragment extends Fragment {
     private PagerAdapter pagerAdapter;
     private android.app.ActionBar actionBar;
 
-    // Fragments
-
     // Top navigation tab title
     private String[] tabs = {"Shopping List", "History"};
 
