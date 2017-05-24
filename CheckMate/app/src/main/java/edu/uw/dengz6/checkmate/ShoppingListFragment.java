@@ -12,14 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import com.firebase.client.Firebase;
 
 /**
  * Created by iguest on 5/21/17.
  */
 
 public class ShoppingListFragment extends Fragment{
-
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -47,7 +47,6 @@ public class ShoppingListFragment extends Fragment{
         fabAllTasks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New ShoppingList", Toast.LENGTH_SHORT).show();
 
                 // Create a dialog and ask the user for input
                 DialogFragment addNewShoppingListFragment = AddNewShoppingListFragment.newInstance();
@@ -73,6 +72,15 @@ public class ShoppingListFragment extends Fragment{
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            // Get current group name
+            SessionManager sessionManager = new SessionManager(getActivity());
+            String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+            final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
+
+            // Set up base firebase URL
+            final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shopping_lists";
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Shopping List");
@@ -90,7 +98,23 @@ public class ShoppingListFragment extends Fragment{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+
+                    // Get the user input
                     String shoppingListName = input.getText().toString();
+
+                    // Push it to Firebase
+                    Firebase.setAndroidContext(getActivity());
+
+                    // Establish connection and set current shopping list as base URL
+                    Firebase shoppingListsRef = new Firebase(firebaseURL);
+
+                    // Create a new shopping list with random ID
+                    Firebase newShoppingList = shoppingListsRef.push();
+
+                    // Create a new shopping list object
+                    ShoppingListData mShoppingList = new ShoppingListData(userID, 0, 0, "5/14/2");
+
+                    newShoppingList.setValue(mShoppingList);
 
                 }
             });

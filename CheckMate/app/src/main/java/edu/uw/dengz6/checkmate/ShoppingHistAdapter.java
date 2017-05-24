@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * A custom array adapter for ShoppingHist Object
  */
 
-public class ShoppingHistAdapter extends ArrayAdapter<ShoppingHistData> {
+public class ShoppingHistAdapter extends ArrayAdapter<ShoppingListData> {
 
 
     public static class ViewHolder {
@@ -24,7 +24,7 @@ public class ShoppingHistAdapter extends ArrayAdapter<ShoppingHistData> {
         int position;
     }
 
-    public ShoppingHistAdapter(Context context, ArrayList<ShoppingHistData> data) {
+    public ShoppingHistAdapter(Context context, ArrayList<ShoppingListData> data) {
         super(context, 0, data);
     }
 
@@ -32,7 +32,7 @@ public class ShoppingHistAdapter extends ArrayAdapter<ShoppingHistData> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        ShoppingHistData data = getItem(position);
+        ShoppingListData data = getItem(position);
         ViewHolder holder;
 
         // Check if an existing view is being reused, otherwise inflate the view
@@ -47,7 +47,7 @@ public class ShoppingHistAdapter extends ArrayAdapter<ShoppingHistData> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.title.setText(data.member);
+        holder.title.setText(data.owner);
         String detailText = "Total Cost: " + data.totalCost + "/n" + "Total Shopping Lists: " + data.totalCost
                 + "/n" + "Since: " + data.since + "/n";
         holder.detail.setText(detailText);
