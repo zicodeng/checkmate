@@ -106,7 +106,10 @@ public class SignupActivity extends AppCompatActivity {
                                             Firebase userRef = ref.child("users");
                                             User user = new User(name, email, password);
                                             Firebase userPush = userRef.push();
+
+                                            // Generate a random value as user ID
                                             final String userID = userPush.getKey();
+
                                             userPush.setValue(user, new Firebase.CompletionListener() {
                                                 @Override
                                                 public void onComplete(FirebaseError firebaseError, Firebase firebase) {
@@ -141,6 +144,8 @@ public class SignupActivity extends AppCompatActivity {
         _signupButton.setEnabled(false);
         setResult(RESULT_OK, null);
         sessionManager.createLoginSession(userName, email, userID, groupName);
+
+        // Start "AddMembersActivity"
         Intent intent = new Intent(getApplicationContext(), AddMembersActivity.class);
         intent.putExtra("group_id", groupName);
         startActivityForResult(intent, 0);
