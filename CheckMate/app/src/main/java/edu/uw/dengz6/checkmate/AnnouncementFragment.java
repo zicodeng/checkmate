@@ -15,6 +15,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
+import java.security.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,7 +53,6 @@ public class AnnouncementFragment extends Fragment {
         fabAllTasks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New Announcement", Toast.LENGTH_SHORT).show();
                 DialogFragment addNewAnnouncementFragment = AddNewAnnouncementFragment.newInstance();
                 addNewAnnouncementFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Shopping_List_Fragment");
             }
@@ -71,6 +76,15 @@ public class AnnouncementFragment extends Fragment {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            // Get current group name
+            SessionManager sessionManager = new SessionManager(getActivity());
+            String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+            final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
+
+            // Set up base firebase URL
+            final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/announcements";
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Announcement");
@@ -91,6 +105,23 @@ public class AnnouncementFragment extends Fragment {
                     dialog.dismiss();
                     String getTitle = title.getText().toString();
                     String getDescription = description.getText().toString();
+
+                    // Push it to Firebase
+                    Firebase.setAndroidContext(getActivity());
+
+                    // Establish connection and set current shopping list as base URL
+                    Firebase announcementRef = new Firebase(firebaseURL);
+
+                    // Create a new shopping list with random ID
+                    Firebase newAnnouncement = announcementRef.push();
+
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
+                    String currentTime = simpleDateFormat.format(new Date());
+
+                    // Create a new shopping list object
+                    AnnouncementData mAnnouncement = new AnnouncementData(getDescription, currentTime, userID);
+
+                    newAnnouncement.setValue(mAnnouncement);
                 }
             });
 
