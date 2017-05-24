@@ -52,6 +52,15 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
         sessionManager = new SessionManager(this);
+
+        if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getQueryParameter("group_name") != null) {
+            _groupText.setText(getIntent().getData().getQueryParameter("group_name"));
+        }
+
+        if(sessionManager.isLoggedIn()){
+            startActivity(new Intent(SignupActivity.this, MainActivity.class));
+        }
+
     }
 
     public void signup() {
