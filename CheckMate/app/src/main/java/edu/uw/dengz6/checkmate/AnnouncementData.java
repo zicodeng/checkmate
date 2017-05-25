@@ -5,6 +5,10 @@ public class AnnouncementData {
     public String createdOn;
     public String createdBy;
 
+    public AnnouncementData() {
+        // default constructor
+    }
+
     public AnnouncementData(String content, String createdOn, String createdBy) {
         this.content = content;
         this.createdOn = createdOn;
