@@ -15,11 +15,16 @@ import android.widget.EditText;
 
 import com.firebase.client.Firebase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by iguest on 5/21/17.
  */
 
-public class ShoppingListFragment extends Fragment{
+public class ShoppingListFragment extends Fragment {
+
+    public static final String TAG = "Shopping_List_Fragment";
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -33,7 +38,6 @@ public class ShoppingListFragment extends Fragment{
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,14 +78,13 @@ public class ShoppingListFragment extends Fragment{
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
             // Get current group name
-            SessionManager sessionManager = new SessionManager(getActivity());
+            final SessionManager sessionManager = new SessionManager(getActivity());
             String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
-            final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
 
             // Set up base firebase URL
             final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shopping_lists";
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Shopping List");
 
@@ -105,16 +108,23 @@ public class ShoppingListFragment extends Fragment{
                     // Push it to Firebase
                     Firebase.setAndroidContext(getActivity());
 
-                    // Establish connection and set current shopping list as base URL
+                    // Establish connection and set "shopping_list" as base URL
                     Firebase shoppingListsRef = new Firebase(firebaseURL);
 
                     // Create a new shopping list with random ID
                     Firebase newShoppingList = shoppingListsRef.push();
 
-                    // Create a new shopping list object
-                    ShoppingListData mShoppingList = new ShoppingListData(userID, 0, 0, "5/14/2");
+                    // Get current date
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
+                    String currentDate = simpleDateFormat.format(new Date());
 
-                    newShoppingList.setValue(mShoppingList);
+                    String ownerID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
+                    String ownerName = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
+
+                    // Create a new shopping list object
+                    ShoppingListData mShoppingList = new ShoppingListData(ownerID, ownerName, "", 0, 0, currentDate);
+
+                    newShoppingList.setValue("Test");
 
                 }
             });

@@ -1,16 +1,19 @@
 package edu.uw.dengz6.checkmate;
 
 public class ShoppingListData {
-    public String owner;
-    public int totalCost;
-    public int totalShoppingItem;
-    public String createdOn;
+    private String ownerId;
+    private String ownerName;
+    private String itemList;
+    private int totalCost;
+    private int totalShoppingItems;
+    private String createdOn;
 
-
-    public ShoppingListData(String owner, int totalCost, int totalShoppingLists, String createdOn) {
-        this.owner = owner;
+    public ShoppingListData(String ownerId, String ownerName, String itemList, int totalCost, int totalShoppingItems, String createdOn) {
+        this.ownerId = ownerId;
+        this.ownerName = ownerName;
+        this.itemList = itemList;
         this.totalCost = totalCost;
-        this.totalShoppingItem = totalShoppingLists;
+        this.totalShoppingItems = totalShoppingItems;
         this.createdOn = createdOn;
     }
 }

@@ -47,11 +47,11 @@ public class ShoppingHistAdapter extends ArrayAdapter<ShoppingListData> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.title.setText(data.owner);
-        String detailText = "Total Cost: " + data.totalCost + "/n" + "Total Shopping Lists: " + data.totalCost
-                + "/n" + "Since: " + data.since + "/n";
-        holder.detail.setText(detailText);
-        holder.highlight.setText(data.totalCost);
+//        holder.title.setText(data.owner);
+//        String detailText = "Total Cost: " + data.totalCost + "/n" + "Total Shopping Lists: " + data.totalCost
+//                + "/n" + "Since: " + data.since + "/n";
+//        holder.detail.setText(detailText);
+//        holder.highlight.setText(data.totalCost);
 
         // Return the completed view to render on screen
         return convertView;
