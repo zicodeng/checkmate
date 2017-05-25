@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
@@ -22,6 +23,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -32,18 +34,23 @@ import static android.content.ContentValues.TAG;
  * A simple {@link Fragment} subclass.
  */
 public class AnnouncementFragment extends Fragment {
+
     public static final String FIREBASE_URL = "https://checkmate-d2c41.firebaseio.com/groups/";
+
+    public static final String TAG = "Announcement_Fragment";
     protected static SessionManager manager;
-    protected static Firebase announcementRef;
     protected static HashMap<String, String> userInfo;
+    protected static Firebase announcementRef;
+    protected static ArrayList<AnnouncementData> announcements;
+    protected AnnouncementAdapter adapter;
+
     public AnnouncementFragment() {
         // Required empty public constructor
     }
 
     public static AnnouncementFragment newInstance() {
-
         Bundle args = new Bundle();
-
+        announcements = new ArrayList<>();
         AnnouncementFragment fragment = new AnnouncementFragment();
         fragment.setArguments(args);
         return fragment;
@@ -53,6 +60,7 @@ public class AnnouncementFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Get root view so we can use it to find its child views later
         View rootView = inflater.inflate(R.layout.fragment_announcement, container, false);
 
@@ -65,17 +73,26 @@ public class AnnouncementFragment extends Fragment {
                 addNewAnnouncementFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Shopping_List_Fragment");
             }
         });
+        adapter = new AnnouncementAdapter(getActivity(), announcements);
+        ListView announcementListView = (ListView) rootView.findViewById(R.id.announcementListView);
+        announcementListView.setAdapter(adapter);
+
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
 
         Firebase.setAndroidContext(getActivity());
-        announcementRef = new Firebase(FIREBASE_URL + userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
-
+        announcementRef = new Firebase(FIREBASE_URL + userInfo.get(SessionManager.KEY_GROUP_NAME) + "/announcements");
         announcementRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
-                    Log.v(TAG, dataSnapshot.getValue().toString());
+                    adapter.clear();
+                    announcements.clear();
+                    for (DataSnapshot announcementSnapshot: dataSnapshot.getChildren()) {
+                        //handle each task
+                        AnnouncementData announcement = announcementSnapshot.getValue(AnnouncementData.class);
+                        announcements.add(announcement);
+                    }
                 }
             }
             @Override
@@ -101,15 +118,6 @@ public class AnnouncementFragment extends Fragment {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            // Get current group name
-            SessionManager sessionManager = new SessionManager(getActivity());
-            String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
-            final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
-
-            // Set up base firebase URL
-            final String firebaseURL = FIREBASE_URL + groupName + "/announcements";
-
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Announcement");
@@ -127,26 +135,16 @@ public class AnnouncementFragment extends Fragment {
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    Firebase announcementsRef = AnnouncementFragment.announcementRef;
+                    Firebase mAnnouncement = announcementsRef.push();
+
                     dialog.dismiss();
                     String getTitle = title.getText().toString();
                     String getDescription = description.getText().toString();
-
-                    // Push it to Firebase
-                    Firebase.setAndroidContext(getActivity());
-
-                    // Establish connection and set current shopping list as base URL
-                    announcementRef = new Firebase(firebaseURL);
-
-                    // Create a new shopping list with random ID
-                    Firebase newAnnouncement = announcementRef.push();
-
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
                     String currentTime = simpleDateFormat.format(new Date());
-
-                    // Create a new shopping list object
-                    AnnouncementData mAnnouncement = new AnnouncementData(getDescription, currentTime, userID);
-
-                    newAnnouncement.setValue(mAnnouncement);
+                    String assigner = AnnouncementFragment.userInfo.get(SessionManager.KEY_USER_ID);
+                    mAnnouncement.setValue(new AnnouncementData(getDescription, currentTime, assigner));
                 }
             });
 
