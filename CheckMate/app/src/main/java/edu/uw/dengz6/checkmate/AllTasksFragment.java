@@ -8,11 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
@@ -21,6 +21,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -36,6 +37,8 @@ public class AllTasksFragment extends Fragment {
     protected static SessionManager manager;
     protected static HashMap<String, String> userInfo;
     protected static Firebase taskRef;
+    protected static ArrayList<TaskData> tasks;
+    private TaskAdapter adapter;
 
     public AllTasksFragment() {
         // Required empty public constructor
@@ -44,6 +47,7 @@ public class AllTasksFragment extends Fragment {
     public static AllTasksFragment newInstance() {
         Bundle args = new Bundle();
         AllTasksFragment fragment = new AllTasksFragment();
+        tasks = new ArrayList<>();
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,6 +79,12 @@ public class AllTasksFragment extends Fragment {
                 AddNewTaskFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Task");
             }
         });
+
+        adapter = new TaskAdapter(getActivity(), tasks);
+        // Attach the adapter to a ListView
+        ListView listView = (ListView) rootView.findViewById(R.id.all_tasks_list_view);
+        listView.setAdapter(adapter);
+
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
 
@@ -85,7 +95,13 @@ public class AllTasksFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
-                    Log.v(TAG, dataSnapshot.getValue().toString());
+                    adapter.clear();
+                    tasks.clear();
+                    for (DataSnapshot taskSnapshot: dataSnapshot.getChildren()) {
+                        //handle each task
+                        TaskData task = taskSnapshot.getValue(TaskData.class);
+                        tasks.add(task);
+                    }
                 }
             }
             @Override
