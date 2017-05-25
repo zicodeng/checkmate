@@ -22,7 +22,19 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".SignupActivity" />
+        <activity android:name=".SignupActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+
+                <data
+                    android:host="www.my.app.com"
+                    android:path="/launch"
+                    android:scheme="http"></data>
+            </intent-filter>
+        </activity>
         <activity android:name=".AddMembersActivity"></activity>
     </application>
 
