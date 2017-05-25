@@ -5,12 +5,10 @@
     android:layout_height="match_parent"
     >
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/shopping_list_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Shopping List"
-        android:gravity="center"
-        />
+        android:layout_height="wrap_content" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_shopping"

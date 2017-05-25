@@ -8,14 +8,21 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -25,6 +32,13 @@ import java.util.Date;
 public class ShoppingListFragment extends Fragment {
 
     public static final String TAG = "Shopping_List_Fragment";
+
+    private ArrayList<ShoppingListData> shoppingLists;
+    private ShoppingListAdapter shoppingListAdapter;
+    private RecyclerView shoppingListRecyclerView;
+
+    private String groupName;
+    private String databaseURL;
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -45,6 +59,47 @@ public class ShoppingListFragment extends Fragment {
 
         // Get root view so we can use it to find its child views later
         View rootView = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
+
+        // Initialize ArrayList
+        shoppingLists = new ArrayList<ShoppingListData>();
+
+        // Construct adapter
+        shoppingListAdapter = new ShoppingListAdapter(shoppingLists, getActivity());
+
+        // Get reference to RecyclerView
+        shoppingListRecyclerView = (RecyclerView) rootView.findViewById(R.id.shopping_list_recycler_view);
+
+        // Attach RecyclerView with adapter
+        shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        shoppingListRecyclerView.setAdapter(shoppingListAdapter);
+
+        // Get current group name
+        final SessionManager sessionManager = new SessionManager(getActivity());
+        groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+        // Set up Firebase connection
+        Firebase.setAndroidContext(getActivity());
+        databaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists";
+        Firebase databaseRef = new Firebase(databaseURL);
+
+        // Render shopping list on screen
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot shoppingListSnapShot : dataSnapshot.getChildren()) {
+                    ShoppingListData mShoppingListData = shoppingListSnapShot.getValue(ShoppingListData.class);
+                    shoppingLists.add(mShoppingListData);
+                }
+
+                Log.v(TAG, shoppingListAdapter.getItemCount() + "");
+                shoppingListAdapter.updateList(shoppingLists);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_shopping);
 
@@ -76,13 +131,11 @@ public class ShoppingListFragment extends Fragment {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            // Get current group name
             final SessionManager sessionManager = new SessionManager(getActivity());
             String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
             // Set up base firebase URL
-            final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shopping_lists";
+            final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists";
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -111,7 +164,7 @@ public class ShoppingListFragment extends Fragment {
                     // Establish connection and set "shopping_list" as base URL
                     Firebase shoppingListsRef = new Firebase(firebaseURL);
 
-                    // Create a new shopping list with random ID
+                    // Create a new shopping list with an unique ID
                     Firebase newShoppingList = shoppingListsRef.push();
 
                     // Get current date
@@ -122,9 +175,9 @@ public class ShoppingListFragment extends Fragment {
                     String ownerName = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
 
                     // Create a new shopping list object
-                    ShoppingListData mShoppingList = new ShoppingListData(ownerID, ownerName, "", 0, 0, currentDate);
+                    ShoppingListData mShoppingList = new ShoppingListData(shoppingListName, ownerID, ownerName, "", 0, 0, currentDate);
 
-                    newShoppingList.setValue("Test");
+                    newShoppingList.setValue(mShoppingList);
 
                 }
             });
