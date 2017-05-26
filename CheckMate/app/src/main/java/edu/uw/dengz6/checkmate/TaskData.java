@@ -8,6 +8,10 @@ public class TaskData {
     public String assigner;
     public String assignee;
 
+    public TaskData() {
+        // Default constructor required for calls to DataSnapshot.getValue(User.class)
+    }
+
     public TaskData(String title, String detail, String dueOn, String createdOn, String assigner, String assignee) {
         this.title = title;
         this.detail = detail;

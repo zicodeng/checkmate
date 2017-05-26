@@ -8,18 +8,32 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 /**
  * Created by iguest on 5/21/17.
  */
 
-public class ShoppingListFragment extends Fragment{
+public class ShoppingListFragment extends Fragment {
 
+    public static final String TAG = "Shopping_List_Fragment";
+
+    private ArrayList<ShoppingListData> shoppingLists;
+    private ShoppingListAdapter shoppingListAdapter;
+    private RecyclerView shoppingListRecyclerView;
+
+    private String groupName;
+    private String databaseURL;
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -34,7 +48,6 @@ public class ShoppingListFragment extends Fragment{
         return fragment;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -42,12 +55,50 @@ public class ShoppingListFragment extends Fragment{
         // Get root view so we can use it to find its child views later
         View rootView = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
 
-        FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_shopping);
+        // Initialize ArrayList
+        shoppingLists = new ArrayList<ShoppingListData>();
 
-        fabAllTasks.setOnClickListener(new View.OnClickListener() {
+        // Get reference to RecyclerView
+        shoppingListRecyclerView = (RecyclerView) rootView.findViewById(R.id.shopping_list_recycler_view);
+
+        // Attach RecyclerView with adapter
+        shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+
+        // Get current group name
+        final SessionManager sessionManager = new SessionManager(getActivity());
+        groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+        // Set up Firebase connection
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
+
+        // Render shopping list on screen
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                shoppingLists.clear();
+                for (DataSnapshot shoppingListSnapShot : dataSnapshot.getChildren()) {
+                    ShoppingListData mShoppingListData = shoppingListSnapShot.getValue(ShoppingListData.class);
+                    shoppingLists.add(mShoppingListData);
+                }
+
+                // Construct adapter
+                shoppingListAdapter = new ShoppingListAdapter(shoppingLists, getActivity());
+                shoppingListRecyclerView.setAdapter(shoppingListAdapter);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        FloatingActionButton fabAddShoppingList = (FloatingActionButton) rootView.findViewById(R.id.fab_shopping);
+
+        fabAddShoppingList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New ShoppingList", Toast.LENGTH_SHORT).show();
 
                 // Create a dialog and ask the user for input
                 DialogFragment addNewShoppingListFragment = AddNewShoppingListFragment.newInstance();
@@ -73,7 +124,10 @@ public class ShoppingListFragment extends Fragment{
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            final SessionManager sessionManager = new SessionManager(getActivity());
+            String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Shopping List");
 
@@ -90,8 +144,34 @@ public class ShoppingListFragment extends Fragment{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+
+                    // Get the user input
                     String shoppingListName = input.getText().toString();
 
+                    // Establish connection and set "shoppingLists" as base URL
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
+
+                    // Create a new shopping list with an unique ID
+                    Firebase newShoppingList = ref.push();
+
+                    // Get ID of this shopping list
+                    String shoppingListID = newShoppingList.getKey();
+
+                    // Get current date
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
+                    String currentDate = simpleDateFormat.format(new Date());
+
+                    String ownerID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
+                    String ownerName = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
+
+                    // Create a new shopping list object
+                    ShoppingListData mShoppingList = new ShoppingListData(shoppingListID, shoppingListName, ownerID, ownerName, 0, 0, currentDate);
+
+                    newShoppingList.setValue(mShoppingList);
+
+                    // Inform the user
+                    Toast.makeText(getActivity(), "New list added", Toast.LENGTH_SHORT).show();
                 }
             });
 
