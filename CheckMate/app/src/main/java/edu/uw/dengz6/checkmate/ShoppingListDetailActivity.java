@@ -11,14 +11,19 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -33,21 +38,45 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list_detail);
 
+        // Get shipping list ID from intent
         shoppingListID = getIntent().getStringExtra(ShoppingListAdapter.EXTRA_SHOPPING_LIST_ID);
 
         shoppingItemRecyclerView = (RecyclerView) findViewById(R.id.shopping_item_recycler_view);
 
-        ArrayList<String> numbers = new ArrayList<String>();
-        numbers.add("A");
-        numbers.add("A");
-        numbers.add("A");
-        numbers.add("A");
-        numbers.add("A");
-
-        ShoppingItemAdapter shoppingItemAdapter = new ShoppingItemAdapter(numbers, this);
+        final ArrayList<ShoppingItemData> itemList = new ArrayList<ShoppingItemData>();
 
         shoppingItemRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        shoppingItemRecyclerView.setAdapter(shoppingItemAdapter);
+
+        // Get current group name
+        final SessionManager sessionManager = new SessionManager(this);
+        String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+        // Set up Firebase connection
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName +
+                        "/shoppingLists/" + shoppingListID + "/itemList");
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // Clear the list before add
+                itemList.clear();
+
+                for (DataSnapshot itemSnapShot : dataSnapshot.getChildren()) {
+                    ShoppingItemData mShoppingItem = itemSnapShot.getValue(ShoppingItemData.class);
+                    itemList.add(mShoppingItem);
+                }
+
+                ShoppingItemAdapter shoppingItemAdapter = new ShoppingItemAdapter(itemList, ShoppingListDetailActivity.this);
+                shoppingItemRecyclerView.setAdapter(shoppingItemAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         FloatingActionButton fabAddShoppingItem = (FloatingActionButton) findViewById(R.id.fab_add_shopping_item);
 
@@ -64,7 +93,8 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
     public class ShoppingItemAdapter extends RecyclerView.Adapter<ShoppingItemAdapter.ViewHolder> {
 
         private LayoutInflater inflater;
-        private ArrayList<String> shoppingItemList;
+        private ArrayList<ShoppingItemData> shoppingItemList;
+        private Context context;
 
         class ViewHolder extends RecyclerView.ViewHolder {
             private TextView shoppingItemName;
@@ -72,12 +102,15 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
             public ViewHolder(View itemView) {
                 super(itemView);
 
+                // Get adapter's context
+                context = itemView.getContext();
+
                 // Tell our ViewHolder what kind of views it should contain
                 shoppingItemName = (TextView) itemView.findViewById(R.id.shopping_item_name);
             }
         }
 
-        public ShoppingItemAdapter(ArrayList<String> shoppingItemList, Context context) {
+        public ShoppingItemAdapter(ArrayList<ShoppingItemData> shoppingItemList, Context context) {
             this.shoppingItemList = shoppingItemList;
             this.inflater = LayoutInflater.from(context);
         };
@@ -94,10 +127,34 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
             // Each item on the list is corresponding to an unique id
             // We can access to each item by using its id
-            String itemName = shoppingItemList.get(position);
+            ShoppingItemData mShoppingItem = shoppingItemList.get(position);
+
+            final String shoppingItemID = mShoppingItem.shoppingItemID;
 
             // Bind data in each item with our ViewHolder
-            viewHolder.shoppingItemName.setText(itemName);
+            viewHolder.shoppingItemName.setText(mShoppingItem.shoppingItemName);
+
+            // Long press to remove an item from the list
+            viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                @Override
+                public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+                    // Get current group name
+                    final SessionManager sessionManager = new SessionManager(context);
+                    String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+                    // Set up Firebase connection
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName +
+                                    "/shoppingLists/" + shoppingListID + "/itemList");
+
+                    // Remove this shopping item from the list
+                    ref.child(shoppingItemID).removeValue();
+
+                    // Inform the user
+                    Toast.makeText(context, "Shopping item removed", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         @Override
@@ -159,7 +216,13 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
                     // Create a new shopping list with an unique ID
                     DatabaseReference newShoppingItem = ref.push();
 
-                    newShoppingItem.setValue(shoppingItemName);
+                    // Get ID of this shopping list
+                    String shoppingItemID = newShoppingItem.getKey();
+
+                    // Create a new shoppingItemData instance
+                    ShoppingItemData mShoppingItem = new ShoppingItemData(shoppingItemID, shoppingItemName);
+
+                    newShoppingItem.setValue(mShoppingItem);
 
                 }
             });

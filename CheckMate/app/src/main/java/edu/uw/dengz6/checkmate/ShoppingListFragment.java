@@ -39,11 +39,6 @@ public class ShoppingListFragment extends Fragment {
     private RecyclerView shoppingListRecyclerView;
 
     private String groupName;
-    private String databaseURL;
-
-    public ShoppingListFragment() {
-        // Required empty public constructor
-    }
 
     public static ShoppingListFragment newInstance() {
 
@@ -70,7 +65,6 @@ public class ShoppingListFragment extends Fragment {
         // Attach RecyclerView with adapter
         shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
         // Get current group name
         final SessionManager sessionManager = new SessionManager(getActivity());
         groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
@@ -92,6 +86,9 @@ public class ShoppingListFragment extends Fragment {
                 // Construct adapter
                 shoppingListAdapter = new ShoppingListAdapter(shoppingLists, getActivity());
                 shoppingListRecyclerView.setAdapter(shoppingListAdapter);
+
+                // Register context menu
+                registerForContextMenu(shoppingListRecyclerView);
             }
 
             @Override
@@ -177,7 +174,7 @@ public class ShoppingListFragment extends Fragment {
                     newShoppingList.setValue(mShoppingList);
 
                     // Inform the user
-                    Toast.makeText(getActivity(), "New list added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "New shopping list added", Toast.LENGTH_SHORT).show();
                 }
             });
 
