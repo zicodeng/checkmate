@@ -9,25 +9,22 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -40,7 +37,7 @@ public class AnnouncementFragment extends Fragment {
     public static final String TAG = "Announcement_Fragment";
     protected static SessionManager manager;
     protected static HashMap<String, String> userInfo;
-    protected static Firebase announcementRef;
+    protected static DatabaseReference announcementRef;
     protected static ArrayList<AnnouncementData> announcements;
     protected AnnouncementAdapter adapter;
 
@@ -98,10 +95,11 @@ public class AnnouncementFragment extends Fragment {
                 }
             }
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -142,7 +140,7 @@ public class AnnouncementFragment extends Fragment {
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
                                     userInfo.get(SessionManager.KEY_GROUP_NAME) + "/announcements");
 
-                    Firebase mAnnouncement = ref.push();
+                    DatabaseReference mAnnouncement = ref.push();
 
                     dialog.dismiss();
                     String getTitle = title.getText().toString();

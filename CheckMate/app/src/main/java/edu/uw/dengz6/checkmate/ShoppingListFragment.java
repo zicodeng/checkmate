@@ -16,6 +16,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,7 +95,7 @@ public class ShoppingListFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
@@ -125,7 +131,7 @@ public class ShoppingListFragment extends Fragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final SessionManager sessionManager = new SessionManager(getActivity());
-            String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+            final String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -153,7 +159,7 @@ public class ShoppingListFragment extends Fragment {
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
 
                     // Create a new shopping list with an unique ID
-                    Firebase newShoppingList = ref.push();
+                    DatabaseReference newShoppingList = ref.push();
 
                     // Get ID of this shopping list
                     String shoppingListID = newShoppingList.getKey();

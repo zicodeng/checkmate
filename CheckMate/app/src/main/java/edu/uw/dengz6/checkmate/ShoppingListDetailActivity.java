@@ -17,7 +17,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -124,10 +125,10 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            String shoppingListID = getArguments().getString(SHOPPING_LIST_ID_KEY);
+            final String shoppingListID = getArguments().getString(SHOPPING_LIST_ID_KEY);
 
             final SessionManager sessionManager = new SessionManager(getActivity());
-            String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+            final String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -156,7 +157,7 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
                                     + "/shoppingLists/" + shoppingListID + "/itemList");
 
                     // Create a new shopping list with an unique ID
-                    Firebase newShoppingItem = ref.push();
+                    DatabaseReference newShoppingItem = ref.push();
 
                     newShoppingItem.setValue(shoppingItemName);
 

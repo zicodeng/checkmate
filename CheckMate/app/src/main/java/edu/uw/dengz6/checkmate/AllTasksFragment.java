@@ -16,8 +16,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.Firebase;
-import com.google.firebase.database.FirebaseError;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -102,8 +103,9 @@ public class AllTasksFragment extends Fragment {
                     }
                 }
             }
+
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
@@ -148,7 +150,7 @@ public class AllTasksFragment extends Fragment {
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
                                     userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
 
-                    Firebase mTask = ref.push();
+                    DatabaseReference mTask = ref.push();
                     // TODO: roommate dropdown and date picker
                     dialog.dismiss();
                     String title = taskTitle.getText().toString();
