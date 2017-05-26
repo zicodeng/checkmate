@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -20,11 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.Dark"/>
-        <activity android:name=".SignupActivity"/>
-        <activity android:name=".AddMembersActivity"/>
+            android:theme="@style/AppTheme.Dark"
+            />
+
         <activity
             android:name=".ShoppingListDetailActivity"
             android:label="@string/title_activity_shopping_list_detail"
@@ -36,6 +38,21 @@
                 android:value="edu.uw.dengz6.checkmate.MainActivity"/>
 
         </activity>
-    </application>
 
+        <activity android:name=".SignupActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+
+                <data
+                    android:host="www.my.app.com"
+                    android:path="/launch"
+                    android:scheme="http"></data>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".AddMembersActivity"></activity>
+    </application>
 </manifest>
