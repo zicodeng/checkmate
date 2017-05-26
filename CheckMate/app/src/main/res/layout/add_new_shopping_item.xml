@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:paddingLeft="@dimen/spacing_medium"
+        android:paddingRight="@dimen/spacing_medium"
+        >
+
+        <EditText android:id="@+id/input_shopping_item_name"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:hint="Shopping Item Name"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+</LinearLayout>
