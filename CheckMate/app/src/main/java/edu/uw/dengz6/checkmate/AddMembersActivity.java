@@ -16,7 +16,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.firebase.client.Firebase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -46,14 +47,13 @@ public class AddMembersActivity extends AppCompatActivity {
             }
         });
         final Map<String, String> userDetails = new SessionManager(this).getUserDetails();
-        Firebase.setAndroidContext(this);
-        final Firebase ref = new Firebase(FIREBASE_URL+"/"+group_id+"/emails_to_be_sent");
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(group_id).child("emails_to_be_sent");
         Button submitButton = (Button) findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 for(int i = 0 ; i < myTextViews.size(); i++){
-                    Firebase pushedData = ref.push();
+                    DatabaseReference pushedData = ref.push();
                     pushedData.setValue(myTextViews.get(i).getText().toString());
                     // Instantiate the RequestQueue.
                     RequestQueue queue = Volley.newRequestQueue(getApplicationContext());

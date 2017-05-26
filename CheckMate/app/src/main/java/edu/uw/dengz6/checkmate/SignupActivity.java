@@ -11,18 +11,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
-    private final String FIREBASER_URL = "https://checkmate-d2c41.firebaseio.com/groups";
     private SessionManager sessionManager;
+    private DatabaseReference groupRef;
 
     @InjectView(R.id.input_name) EditText _nameText;
     @InjectView(R.id.input_email) EditText _emailText;
@@ -85,8 +86,7 @@ public class SignupActivity extends AppCompatActivity {
         final String groupName = _groupText.getText().toString();
 
         //set up firebase before using
-        Firebase.setAndroidContext(this);
-        Firebase groupRef = new Firebase(FIREBASER_URL);
+        groupRef = FirebaseDatabase.getInstance().getReference().child("groups");
         groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -101,29 +101,27 @@ public class SignupActivity extends AppCompatActivity {
                             }, 1000);
                 }else{
                     final Group group = new Group(groupName);
-                    final Firebase ref1 = new Firebase(FIREBASER_URL+"/"+groupName);
+                    final DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName);
                     new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run() {
-                                ref1.setValue(group, new Firebase.CompletionListener() {
+                                ref1.setValue(group, new DatabaseReference.CompletionListener() {
                                     @Override
-                                    public void onComplete(FirebaseError firebaseError, Firebase firebase) { //check for errors while pushing
-                                        if (firebaseError != null) {
-                                            Log.v(TAG, "Data could not be saved. " + firebaseError.getMessage());
+                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) { //check for errors while pushing
+                                        if (databaseError != null) {
+                                            Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
                                         } else {
-                                            Firebase ref = new Firebase(FIREBASER_URL+"/"+groupName);
-                                            Firebase userRef = ref.child("users");
+                                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
                                             User user = new User(name, email, password);
-                                            Firebase userPush = userRef.push();
-
+                                            DatabaseReference userPush = userRef.push();
                                             // Generate a random value as user ID
                                             final String userID = userPush.getKey();
 
-                                            userPush.setValue(user, new Firebase.CompletionListener() {
+                                            userPush.setValue(user, new DatabaseReference.CompletionListener() {
                                                 @Override
-                                                public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                                                    if (firebaseError != null) {
-                                                        Log.v(TAG, "Data could not be saved. " + firebaseError.getMessage());
+                                                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                    if (databaseError != null) {
+                                                        Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
                                                     }else{ //if there are no errors then we proceed to adding people into the group
                                                         // On complete call either onSignupSuccess or onSignupFailed
                                                         // depending on success
@@ -139,8 +137,9 @@ public class SignupActivity extends AppCompatActivity {
                         }, 1500);
                 }
             }
+
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
