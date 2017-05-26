@@ -129,10 +129,6 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
             final SessionManager sessionManager = new SessionManager(getActivity());
             String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
-            // Set up base firebase URL
-            final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName
-                    + "/shoppingLists/" + shoppingListID + "/itemList";
-
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Shopping Item");
@@ -154,16 +150,15 @@ public class ShoppingListDetailActivity extends AppCompatActivity {
                     // Get the user input
                     String shoppingItemName = input.getText().toString();
 
-                    // Set Firebase context
-                    Firebase.setAndroidContext(getActivity());
-
                     // Establish connection and set "itemList" as base URL
-                    Firebase itemListRef = new Firebase(firebaseURL);
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName
+                                    + "/shoppingLists/" + shoppingListID + "/itemList");
 
                     // Create a new shopping list with an unique ID
-                    Firebase newShoppingList = itemListRef.push();
+                    Firebase newShoppingItem = ref.push();
 
-                    newShoppingList.setValue(shoppingItemName);
+                    newShoppingItem.setValue(shoppingItemName);
 
                 }
             });

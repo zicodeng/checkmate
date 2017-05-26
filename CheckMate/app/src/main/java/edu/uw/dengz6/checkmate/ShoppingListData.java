@@ -1,10 +1,6 @@
 package edu.uw.dengz6.checkmate;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 public class ShoppingListData {
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
 
     public String shoppingListID;
     public String shoppingListName;

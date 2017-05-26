@@ -127,9 +127,6 @@ public class ShoppingListFragment extends Fragment {
             final SessionManager sessionManager = new SessionManager(getActivity());
             String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
-            // Set up base firebase URL
-            final String firebaseURL = "https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists";
-
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Shopping List");
@@ -152,10 +149,11 @@ public class ShoppingListFragment extends Fragment {
                     String shoppingListName = input.getText().toString();
 
                     // Establish connection and set "shoppingLists" as base URL
-                    Firebase shoppingListsRef = new Firebase(firebaseURL);
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
 
                     // Create a new shopping list with an unique ID
-                    Firebase newShoppingList = shoppingListsRef.push();
+                    Firebase newShoppingList = ref.push();
 
                     // Get ID of this shopping list
                     String shoppingListID = newShoppingList.getKey();
