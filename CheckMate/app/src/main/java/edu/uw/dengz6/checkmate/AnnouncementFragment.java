@@ -80,9 +80,11 @@ public class AnnouncementFragment extends Fragment {
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
 
-        Firebase.setAndroidContext(getActivity());
-        announcementRef = new Firebase(FIREBASE_URL + userInfo.get(SessionManager.KEY_GROUP_NAME) + "/announcements");
-        announcementRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                        userInfo.get(SessionManager.KEY_GROUP_NAME) + "/announcements");
+
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -135,8 +137,12 @@ public class AnnouncementFragment extends Fragment {
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Firebase announcementsRef = AnnouncementFragment.announcementRef;
-                    Firebase mAnnouncement = announcementsRef.push();
+
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/announcements");
+
+                    Firebase mAnnouncement = ref.push();
 
                     dialog.dismiss();
                     String getTitle = title.getText().toString();
