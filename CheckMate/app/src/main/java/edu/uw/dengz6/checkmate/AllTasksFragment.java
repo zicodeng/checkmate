@@ -31,12 +31,9 @@ import java.util.HashMap;
  */
 public class AllTasksFragment extends Fragment {
 
-    public static final String FIREBASE_URL = "https://checkmate-d2c41.firebaseio.com/groups/";
-
     public static final String TAG = "All_Tasks_Fragment";
     protected static SessionManager manager;
     protected static HashMap<String, String> userInfo;
-    protected static Firebase taskRef;
     protected static ArrayList<TaskData> tasks;
     private TaskAdapter adapter;
 
@@ -88,10 +85,11 @@ public class AllTasksFragment extends Fragment {
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
 
-        Firebase.setAndroidContext(getActivity());
-        taskRef = new Firebase(FIREBASE_URL + userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                        userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
 
-        taskRef.addValueEventListener(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -146,9 +144,11 @@ public class AllTasksFragment extends Fragment {
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Firebase taskRef = AllTasksFragment.taskRef;
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
 
-                    Firebase mTask = taskRef.push();
+                    Firebase mTask = ref.push();
                     // TODO: roommate dropdown and date picker
                     dialog.dismiss();
                     String title = taskTitle.getText().toString();
