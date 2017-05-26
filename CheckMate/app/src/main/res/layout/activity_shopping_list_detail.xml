@@ -1,22 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="edu.uw.dengz6.checkmate.ShoppingListDetailActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.uw.dengz6.checkmate.ShoppingListFragment"
     android:background="@color/colorBackground"
     >
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/shopping_list_recycler_view"
+        android:id="@+id/shopping_item_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:layout_marginTop="@dimen/spacing_small"
+        android:paddingLeft="@dimen/spacing_small"
+        android:paddingRight="@dimen/spacing_small"
         />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_shopping"
+        android:id="@+id/fab_add_shopping_item"
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
         android:layout_gravity="bottom|end"

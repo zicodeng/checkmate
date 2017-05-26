@@ -1,6 +1,7 @@
 package edu.uw.dengz6.checkmate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,11 @@ import java.util.ArrayList;
 
 public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ViewHolder> {
 
+    public final static String EXTRA_SHOPPING_LIST_ID = "edu.uw.dengz6.checkmate.Extra_Shopping_List_ID";
+
     private LayoutInflater inflater;
     private ArrayList<ShoppingListData> shoppingLists;
+    private Context context;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView shoppingListName;
@@ -25,6 +29,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         public ViewHolder(View itemView) {
             super(itemView);
+            context = itemView.getContext();
 
             // Tell our ViewHolder what kind of views it should contain
             shoppingListName = (TextView) itemView.findViewById(R.id.shopping_list_name);
@@ -41,7 +46,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // P1: which layout template file we want each item to inflate
-        View view = inflater.inflate(R.layout.shopping_list, parent, false);
+        View view = inflater.inflate(R.layout.list_item_shopping_list, parent, false);
 
         return new ViewHolder(view);
     }
@@ -53,17 +58,27 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         final ShoppingListData item = shoppingLists.get(position);
 
         // Bind data in each item with our ViewHolder
-        viewHolder.shoppingListName.setText(item.ownerName);
-        viewHolder.shoppingListCreatedDate.setText(item.createdOn);
-        viewHolder.shoppingListOwner.setText(item.shoppingListName);
+        String shoppingListName = item.shoppingListName;
+        final String shoppingListID = item.shoppingListID;
 
-        // Click an item in ArticleList will replace right panel with PreviewFragment
-//        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                callback.onArticleItemClicked(item);
-//            }
-//        });
+        viewHolder.shoppingListName.setText(shoppingListName);
+        viewHolder.shoppingListCreatedDate.setText(item.createdOn);
+        viewHolder.shoppingListOwner.setText(item.ownerName);
+
+        // Click a shopping list to see detail
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Start shopping list detail activity
+                Intent shoppingListDetailIntent = new Intent(context, ShoppingListDetailActivity.class);
+
+                // Include shopping list ID and send it to "Shopping List Detail Activity"
+                shoppingListDetailIntent.putExtra(EXTRA_SHOPPING_LIST_ID, shoppingListID);
+
+                context.startActivity(shoppingListDetailIntent);
+            }
+        });
 
         // Long press an item will replace left panel with FullArticleDialogFragment
 //        viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
@@ -80,10 +95,10 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         return shoppingLists.size();
     }
 
-    public void updateList(ArrayList<ShoppingListData> newShoppingList) {
-        if(newShoppingList != null) {
+    public void updateList(ArrayList<ShoppingListData> newShoppingLists) {
+        if(newShoppingLists != null) {
             shoppingLists.clear();
-            shoppingLists.addAll(newShoppingList);
+            shoppingLists.addAll(newShoppingLists);
         }
         notifyDataSetChanged();
     }
