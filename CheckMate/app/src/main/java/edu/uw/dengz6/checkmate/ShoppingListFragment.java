@@ -54,16 +54,20 @@ public class ShoppingListFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Get root view so we can use it to find its child views later
-        View rootView = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
 
         // Initialize ArrayList
         shoppingLists = new ArrayList<ShoppingListData>();
+
+        // Construct adapter
+        shoppingListAdapter = new ShoppingListAdapter(shoppingLists, getActivity());
 
         // Get reference to RecyclerView
         shoppingListRecyclerView = (RecyclerView) rootView.findViewById(R.id.shopping_list_recycler_view);
 
         // Attach RecyclerView with adapter
         shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        shoppingListRecyclerView.setAdapter(shoppingListAdapter);
 
         // Get current group name
         final SessionManager sessionManager = new SessionManager(getActivity());
@@ -83,12 +87,8 @@ public class ShoppingListFragment extends Fragment {
                     shoppingLists.add(mShoppingListData);
                 }
 
-                // Construct adapter
-                shoppingListAdapter = new ShoppingListAdapter(shoppingLists, getActivity());
-                shoppingListRecyclerView.setAdapter(shoppingListAdapter);
-
-                // Register context menu
-                registerForContextMenu(shoppingListRecyclerView);
+                // Update adapter
+                shoppingListAdapter.notifyDataSetChanged();
             }
 
             @Override

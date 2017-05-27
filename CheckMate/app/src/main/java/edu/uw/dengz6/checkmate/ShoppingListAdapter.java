@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,30 +17,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A custom array adapter for ShoppingHist Object
  */
 
-public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ViewHolder>
-        implements View.OnCreateContextMenuListener {
+public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ViewHolder> {
 
     public final static String EXTRA_SHOPPING_LIST_ID = "edu.uw.dengz6.checkmate.Extra_Shopping_List_ID";
 
     private LayoutInflater inflater;
     private ArrayList<ShoppingListData> shoppingLists;
     private Context context;
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
-    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView shoppingListName;
@@ -144,6 +138,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
             final SessionManager sessionManager = new SessionManager(getActivity());
             final String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+            final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -158,7 +153,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
             // Establish connection and set "shoppingLists" as base URL
             final DatabaseReference ref = FirebaseDatabase.getInstance()
-                    .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists/" + shoppingListID);
+                    .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName);
 
             // Set up the buttons
             builder.setPositiveButton("ADD TO HISTORY", new DialogInterface.OnClickListener() {
@@ -172,12 +167,31 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                         Toast.makeText(getActivity(), "Total cost must be non-empty", Toast.LENGTH_SHORT).show();
                     } else {
                         // Get the user input
-                        int totalCost = Integer.parseInt(inputValue);
+                        final int totalCost = Integer.parseInt(inputValue);
 
-                        Map<String, Object> shoppingListUpdate = new HashMap<String, Object>();
-                        shoppingListUpdate.put("totalCost", totalCost);
+                        final DatabaseReference shoppingListRef = ref.child("shoppingLists").child(shoppingListID);
 
-                        ref.updateChildren(shoppingListUpdate);
+                        // Retrieve the shopping list and update its "Total Cost" field
+                        shoppingListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                ShoppingListData mShoppingListData = dataSnapshot.getValue(ShoppingListData.class);
+
+                                // Update "Total Cost"
+                                mShoppingListData.totalCost = totalCost;
+
+                                // Add the updated list to "Shopping Lists History" under that user
+                                ref.child("users").child(userID).child("shoppingHistoryList").push().setValue(mShoppingListData);
+
+                                // Delete the shopping list in "Shopping Lists"
+                                shoppingListRef.removeValue();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
 
                         // Inform the user
                         Toast.makeText(getActivity(), "Total Cost: " + totalCost, Toast.LENGTH_SHORT).show();
@@ -192,7 +206,10 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
-                    ref.removeValue();
+                    ref.child("shoppingLists").child(shoppingListID).removeValue();
+
+                    // Inform the user
+                    Toast.makeText(getActivity(), "Shopping List deleted", Toast.LENGTH_SHORT).show();
 
                     // Close the dialog
                     dialog.dismiss();
