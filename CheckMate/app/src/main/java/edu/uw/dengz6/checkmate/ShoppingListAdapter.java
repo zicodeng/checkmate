@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -20,9 +21,9 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A custom array adapter for ShoppingHist Object
@@ -106,8 +107,8 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             public boolean onLongClick(View v) {
                 // Create a dialog and ask the user to
                 // either delete the list or add the list to history
-
-                
+                DialogFragment addNewShoppingListFragment = ManageShoppingListFragment.newInstance(shoppingListID);
+                addNewShoppingListFragment.show(((FragmentActivity)context).getSupportFragmentManager(), "Manage_Shopping_List");
 
                 return true;
             }
@@ -120,13 +121,17 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         return shoppingLists.size();
     }
 
-    public static class AddNewShoppingListFragment extends DialogFragment {
+    public static class ManageShoppingListFragment extends DialogFragment {
 
-        public static AddNewShoppingListFragment newInstance() {
+        private static final String SHOPPING_LIST_ID_KEY = "Shopping_List_ID_Key";
+
+        public static ManageShoppingListFragment newInstance(String shoppingListID) {
 
             Bundle args = new Bundle();
 
-            AddNewShoppingListFragment fragment = new AddNewShoppingListFragment();
+            args.putString(SHOPPING_LIST_ID_KEY, shoppingListID);
+
+            ManageShoppingListFragment fragment = new ManageShoppingListFragment();
             fragment.setArguments(args);
             return fragment;
         }
@@ -134,61 +139,63 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            final String shoppingListID = getArguments().getString(SHOPPING_LIST_ID_KEY);
+
             final SessionManager sessionManager = new SessionManager(getActivity());
             final String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-            builder.setTitle("Add a New Shopping List");
+            builder.setTitle("Manage Shopping List");
 
-            View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.add_new_shopping_list, (ViewGroup) getView(), false);
+            View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.manage_shopping_list, (ViewGroup) getView(), false);
 
-            // Set up the input
-            final EditText input = (EditText) viewInflated.findViewById(R.id.shopping_list_name);
+            // Grab views in the dialog
+            final EditText input = (EditText) viewInflated.findViewById(R.id.shopping_list_total_cost);
 
-            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             builder.setView(viewInflated);
 
+            // Establish connection and set "shoppingLists" as base URL
+            final DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists/" + shoppingListID);
+
             // Set up the buttons
-            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("ADD TO HISTORY", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+
+                    String inputValue = String.valueOf(input.getText());
+
+                    // Validate input
+                    if(inputValue.length() == 0) {
+                        Toast.makeText(getActivity(), "Total cost must be non-empty", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Get the user input
+                        int totalCost = Integer.parseInt(inputValue);
+
+                        Map<String, Object> shoppingListUpdate = new HashMap<String, Object>();
+                        shoppingListUpdate.put("totalCost", totalCost);
+
+                        ref.updateChildren(shoppingListUpdate);
+
+                        // Inform the user
+                        Toast.makeText(getActivity(), "Total Cost: " + totalCost, Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Close the dialog
                     dialog.dismiss();
-
-                    // Get the user input
-                    String shoppingListName = input.getText().toString();
-
-                    // Establish connection and set "shoppingLists" as base URL
-                    DatabaseReference ref = FirebaseDatabase.getInstance()
-                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
-
-                    // Create a new shopping list with an unique ID
-                    DatabaseReference newShoppingList = ref.push();
-
-                    // Get ID of this shopping list
-                    String shoppingListID = newShoppingList.getKey();
-
-                    // Get current date
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
-                    String currentDate = simpleDateFormat.format(new Date());
-
-                    String ownerID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
-                    String ownerName = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
-
-                    // Create a new shopping list object
-                    ShoppingListData mShoppingList = new ShoppingListData(shoppingListID, shoppingListName, ownerID, ownerName, 0, 0, currentDate);
-
-                    newShoppingList.setValue(mShoppingList);
-
-                    // Inform the user
-                    Toast.makeText(getActivity(), "New shopping list added", Toast.LENGTH_SHORT).show();
                 }
             });
 
-            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
+
+                    ref.removeValue();
+
+                    // Close the dialog
+                    dialog.dismiss();
                 }
             });
 
