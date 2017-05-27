@@ -1,10 +1,10 @@
 package edu.uw.dengz6.checkmate;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -12,42 +12,59 @@ import java.util.ArrayList;
 /**
  * A custom array adapter for AnnouncementData Object
  */
-public class AnnouncementAdapter extends ArrayAdapter<AnnouncementData> {
+public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapter.ViewHolder> {
 
+    private LayoutInflater inflater;
+    private ArrayList<AnnouncementData> announcementLists;
+    private Context context;
 
-    public static class ViewHolder {
-        TextView content;
-        TextView meta;
-        int position;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView content;
+        private TextView description;
+        private TextView assigner;
+        private TextView createdOn;
+
+        public ViewHolder(View itemView){
+            super(itemView);
+            context = itemView.getContext();
+            content = (TextView) itemView.findViewById(R.id.announcement_item_content);
+            description = (TextView) itemView.findViewById(R.id.announcement_item_description);
+            assigner = (TextView) itemView.findViewById(R.id.announcement_created_by);
+            createdOn = (TextView) itemView.findViewById(R.id.announcement_created_on);
+        }
     }
 
     public AnnouncementAdapter(Context context, ArrayList<AnnouncementData> data) {
-        super(context, 0, data);
+        this.announcementLists = data;
+        this.inflater = LayoutInflater.from(context);
     }
 
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.list_item_announcement, parent, false);
+        return new ViewHolder(view);
+    }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
-        AnnouncementData data = getItem(position);
-        ViewHolder holder;
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        final AnnouncementData data = announcementLists.get(position);
+        viewHolder.content.setText(data.content);
+        viewHolder.description.setText(data.description);
+        viewHolder.assigner.setText(data.createdBy);
+        viewHolder.createdOn.setText(data.createdOn);
 
-        // Check if an existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_announcement, parent, false);
-            holder = new ViewHolder();
-            holder.content = (TextView) convertView.findViewById(R.id.announcement_item_content);
-            holder.meta = (TextView) convertView.findViewById(R.id.announcement_item_meta);
-            // TODO: complete the rest view binding
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+    }
+
+    @Override
+    public int getItemCount() {
+        return announcementLists.size();
+    }
+
+    public void updateList(ArrayList<AnnouncementData> newAnnouncementLists) {
+        if(newAnnouncementLists != null) {
+            announcementLists.clear();
+            announcementLists.addAll(announcementLists);
         }
-
-        holder.content.setText(data.content);
-        String metaText = data.createdBy + " "+ data.createdOn;
-        holder.meta.setText(metaText);
-        // Return the completed view to render on screen
-        return convertView;
+        notifyDataSetChanged();
     }
 }
