@@ -40,7 +40,6 @@ public class AnnouncementFragment extends Fragment {
     private ArrayList<AnnouncementData> announcements;
     private AnnouncementAdapter adapter;
     private RecyclerView announcementRecyclerView;
-    private String assigner;
     private String groupName;
     protected static HashMap<String, String> userInfo;
 
@@ -70,8 +69,6 @@ public class AnnouncementFragment extends Fragment {
         announcementRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         final SessionManager manager = new SessionManager(getActivity());
-
-        assigner = manager.getUserDetails().get(SessionManager.KEY_NAME);
 
         groupName = manager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
@@ -124,6 +121,7 @@ public class AnnouncementFragment extends Fragment {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final SessionManager sessionManager = new SessionManager(getActivity());
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -145,7 +143,7 @@ public class AnnouncementFragment extends Fragment {
 
                     DatabaseReference ref = FirebaseDatabase.getInstance()
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/announcements");
+                                    sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME) + "/announcements");
 
                     DatabaseReference mAnnouncement = ref.push();
 
@@ -154,7 +152,7 @@ public class AnnouncementFragment extends Fragment {
                     String getDescription = description.getText().toString();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
                     String currentTime = simpleDateFormat.format(new Date());
-                    String assigner = AnnouncementFragment.userInfo.get(SessionManager.KEY_NAME);
+                    String assigner = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
                     mAnnouncement.setValue(new AnnouncementData(getTitle ,getDescription, currentTime, assigner));
                 }
             });

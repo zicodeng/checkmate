@@ -47,11 +47,25 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        final AnnouncementData data = announcementLists.get(position);
+        AnnouncementData data = announcementLists.get(position);
         viewHolder.content.setText(data.content);
         viewHolder.description.setText(data.description);
         viewHolder.assigner.setText(data.createdBy);
         viewHolder.createdOn.setText(data.createdOn);
+//        viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener(){
+//
+//            @Override
+//            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//                final SessionManager sessionManager = new SessionManager(context);
+//                String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+//
+//                DatabaseReference ref = FirebaseDatabase.getInstance()
+//                        .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+//                                groupName + "/announcements/");
+//                ref.child(announcementID).removeValue();
+//                Toast.makeText(context, "Announcement removed", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
     }
 
