@@ -16,7 +16,7 @@
         <EditText android:id="@+id/shopping_list_name"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:inputType="text"
+                  android:inputType="textCapWords"
                   android:hint="Shopping List Name"
             />
 
