@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //Firebase cloud message
+        String username = "puf";
+        FirebaseMessaging.getInstance().subscribeToTopic("user_"+username);
+
+
+
         super.onCreate(savedInstanceState);
         session = new SessionManager(getApplicationContext());
 
