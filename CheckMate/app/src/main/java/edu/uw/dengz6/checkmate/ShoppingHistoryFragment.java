@@ -86,6 +86,7 @@ public class ShoppingHistoryFragment extends Fragment {
                     User mUser = userSnapShot.getValue(User.class);
 
                     final String userName = mUser.name;
+                    final String createdOn = mUser.createdOn;
 
                     // Set up Firebase connection
                     DatabaseReference shoppingHistoryListRef = FirebaseDatabase.getInstance()
@@ -108,7 +109,8 @@ public class ShoppingHistoryFragment extends Fragment {
 
                             }
 
-                            ShoppingHistoryData mShoppingHistoryData = new ShoppingHistoryData(userName, totalSpend, totalShoppingLists, "date");
+                            ShoppingHistoryData mShoppingHistoryData =
+                                    new ShoppingHistoryData(userName, totalSpend, totalShoppingLists, createdOn);
 
                             shoppingHistoryList.add(mShoppingHistoryData);
 

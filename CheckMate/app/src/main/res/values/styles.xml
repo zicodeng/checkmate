@@ -15,6 +15,8 @@
         <item name="tabTextColor">#FFFFFF</item>
         <item name="tabSelectedTextColor">@color/colorPrimary</item>
         <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
+        <item name="tabMode">fixed</item>
     </style>
 
     <style name="TopNavigationText">

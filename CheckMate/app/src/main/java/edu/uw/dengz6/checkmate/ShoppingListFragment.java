@@ -2,6 +2,7 @@ package edu.uw.dengz6.checkmate;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -77,15 +78,25 @@ public class ShoppingListFragment extends Fragment {
         DatabaseReference ref = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
 
+        // Progress dialog
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         // Render shopping list on screen
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shoppingLists.clear();
+
                 for (DataSnapshot shoppingListSnapShot : dataSnapshot.getChildren()) {
                     ShoppingListData mShoppingListData = shoppingListSnapShot.getValue(ShoppingListData.class);
                     shoppingLists.add(mShoppingListData);
                 }
+
+                progressDialog.dismiss();
 
                 // Update adapter
                 shoppingListAdapter.notifyDataSetChanged();
@@ -162,7 +173,7 @@ public class ShoppingListFragment extends Fragment {
                     String shoppingListID = newShoppingList.getKey();
 
                     // Get current date
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
                     String currentDate = simpleDateFormat.format(new Date());
 
                     String ownerID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
