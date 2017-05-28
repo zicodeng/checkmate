@@ -202,7 +202,7 @@ public class AllTasksFragment extends Fragment {
                     picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                         @Override
                         public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                            if (hourOfDay > 13) {
+                            if (hourOfDay < 13) {
                                 dueTime.setText(hourOfDay+":"+minute + " AM");
                             } else {
                                 dueTime.setText(hourOfDay - 12 +":"+minute + " PM");
@@ -269,7 +269,7 @@ public class AllTasksFragment extends Fragment {
                     String detail = taskDetail.getText().toString();
                     SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
                     String createdOn = dt.format(new Date());
-                    String dueOn = dueDate.getText().toString() + dueTime.getText().toString();
+                    String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
                     String assigner = AllTasksFragment.userInfo.get(SessionManager.KEY_NAME);
                     mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assigner));
                 }
