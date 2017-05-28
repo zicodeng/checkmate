@@ -1,12 +1,27 @@
 package edu.uw.dengz6.checkmate;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -29,6 +44,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         public ViewHolder(View itemView) {
             super(itemView);
+
             context = itemView.getContext();
 
             // Tell our ViewHolder what kind of views it should contain
@@ -80,13 +96,17 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             }
         });
 
-        // Long press an item will replace left panel with FullArticleDialogFragment
-//        viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-//            @Override
-//            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//                callback.onArticleItemLongPressed(item.getWebUrl());
-//            }
-//        });
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // Create a dialog and ask the user to
+                // either delete the list or add the list to history
+                DialogFragment addNewShoppingListFragment = ManageShoppingListFragment.newInstance(shoppingListID);
+                addNewShoppingListFragment.show(((FragmentActivity)context).getSupportFragmentManager(), "Manage_Shopping_List");
+
+                return true;
+            }
+        });
     }
 
     @Override
@@ -95,11 +115,108 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         return shoppingLists.size();
     }
 
-    public void updateList(ArrayList<ShoppingListData> newShoppingLists) {
-        if(newShoppingLists != null) {
-            shoppingLists.clear();
-            shoppingLists.addAll(newShoppingLists);
+    public static class ManageShoppingListFragment extends DialogFragment {
+
+        private static final String SHOPPING_LIST_ID_KEY = "Shopping_List_ID_Key";
+
+        public static ManageShoppingListFragment newInstance(String shoppingListID) {
+
+            Bundle args = new Bundle();
+
+            args.putString(SHOPPING_LIST_ID_KEY, shoppingListID);
+
+            ManageShoppingListFragment fragment = new ManageShoppingListFragment();
+            fragment.setArguments(args);
+            return fragment;
         }
-        notifyDataSetChanged();
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            final String shoppingListID = getArguments().getString(SHOPPING_LIST_ID_KEY);
+
+            final SessionManager sessionManager = new SessionManager(getActivity());
+            final String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+            final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle("Manage Shopping List");
+
+            View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.manage_shopping_list, (ViewGroup) getView(), false);
+
+            // Grab views in the dialog
+            final EditText input = (EditText) viewInflated.findViewById(R.id.shopping_list_total_cost);
+
+            builder.setView(viewInflated);
+
+            // Establish connection and set "shoppingLists" as base URL
+            final DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName);
+
+            // Set up the buttons
+            builder.setPositiveButton("ADD TO HISTORY", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    String inputValue = String.valueOf(input.getText());
+
+                    // Validate input
+                    if(inputValue.length() == 0) {
+                        Toast.makeText(getActivity(), "Total cost must be non-empty", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Get the user input
+                        final int totalCost = Integer.parseInt(inputValue);
+
+                        final DatabaseReference shoppingListRef = ref.child("shoppingLists").child(shoppingListID);
+
+                        // Retrieve the shopping list and update its "Total Cost" field
+                        shoppingListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                ShoppingListData mShoppingListData = dataSnapshot.getValue(ShoppingListData.class);
+
+                                // Update "Total Cost"
+                                mShoppingListData.totalCost = totalCost;
+
+                                // Add the updated list to "Shopping Lists History" under that user
+                                ref.child("users").child(userID).child("shoppingHistoryList").push().setValue(mShoppingListData);
+
+                                // Delete the shopping list in "Shopping Lists"
+                                shoppingListRef.removeValue();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        // Inform the user
+                        Toast.makeText(getActivity(), "Total Cost: " + totalCost, Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Close the dialog
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    ref.child("shoppingLists").child(shoppingListID).removeValue();
+
+                    // Inform the user
+                    Toast.makeText(getActivity(), "Shopping List deleted", Toast.LENGTH_SHORT).show();
+
+                    // Close the dialog
+                    dialog.dismiss();
+                }
+            });
+
+            return builder.create();
+        }
     }
 }

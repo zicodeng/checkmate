@@ -2,6 +2,7 @@ package edu.uw.dengz6.checkmate;
 
 public class AnnouncementData {
     public String content;
+    public String description;
     public String createdOn;
     public String createdBy;
 
@@ -9,8 +10,9 @@ public class AnnouncementData {
         // default constructor
     }
 
-    public AnnouncementData(String content, String createdOn, String createdBy) {
+    public AnnouncementData(String content, String description, String createdOn, String createdBy) {
         this.content = content;
+        this.description = description;
         this.createdOn = createdOn;
         this.createdBy = createdBy;
     }

@@ -9,11 +9,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,11 +36,13 @@ public class AnnouncementFragment extends Fragment {
     public static final String FIREBASE_URL = "https://checkmate-d2c41.firebaseio.com/groups/";
 
     public static final String TAG = "Announcement_Fragment";
-    protected static SessionManager manager;
+
+    private ArrayList<AnnouncementData> announcements;
+    private AnnouncementAdapter adapter;
+    private RecyclerView announcementRecyclerView;
+    private String assigner;
+    private String groupName;
     protected static HashMap<String, String> userInfo;
-    protected static DatabaseReference announcementRef;
-    protected static ArrayList<AnnouncementData> announcements;
-    protected AnnouncementAdapter adapter;
 
     public AnnouncementFragment() {
         // Required empty public constructor
@@ -47,7 +50,6 @@ public class AnnouncementFragment extends Fragment {
 
     public static AnnouncementFragment newInstance() {
         Bundle args = new Bundle();
-        announcements = new ArrayList<>();
         AnnouncementFragment fragment = new AnnouncementFragment();
         fragment.setArguments(args);
         return fragment;
@@ -61,6 +63,39 @@ public class AnnouncementFragment extends Fragment {
         // Get root view so we can use it to find its child views later
         View rootView = inflater.inflate(R.layout.fragment_announcement, container, false);
 
+        announcements = new ArrayList<>();
+
+        announcementRecyclerView = (RecyclerView) rootView.findViewById(R.id.announcementRecyclerView);
+
+        announcementRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        final SessionManager manager = new SessionManager(getActivity());
+
+        assigner = manager.getUserDetails().get(SessionManager.KEY_NAME);
+
+        groupName = manager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                        groupName + "/announcements");
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                announcements.clear();
+                for (DataSnapshot announcementSnapshot: dataSnapshot.getChildren()) {
+                    //handle each task
+                    AnnouncementData announcement = announcementSnapshot.getValue(AnnouncementData.class);
+                    announcements.add(announcement);
+                }
+                adapter = new AnnouncementAdapter(getActivity(), announcements);
+                announcementRecyclerView.setAdapter(adapter);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_announcement);
 
         fabAllTasks.setOnClickListener(new View.OnClickListener() {
@@ -68,35 +103,6 @@ public class AnnouncementFragment extends Fragment {
             public void onClick(View view) {
                 DialogFragment addNewAnnouncementFragment = AddNewAnnouncementFragment.newInstance();
                 addNewAnnouncementFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Shopping_List_Fragment");
-            }
-        });
-        adapter = new AnnouncementAdapter(getActivity(), announcements);
-        ListView announcementListView = (ListView) rootView.findViewById(R.id.announcementListView);
-        announcementListView.setAdapter(adapter);
-
-        manager = new SessionManager(getContext());
-        userInfo = manager.getUserDetails();
-
-        DatabaseReference ref = FirebaseDatabase.getInstance()
-                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                        userInfo.get(SessionManager.KEY_GROUP_NAME) + "/announcements");
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-                    adapter.clear();
-                    announcements.clear();
-                    for (DataSnapshot announcementSnapshot: dataSnapshot.getChildren()) {
-                        //handle each task
-                        AnnouncementData announcement = announcementSnapshot.getValue(AnnouncementData.class);
-                        announcements.add(announcement);
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -118,6 +124,7 @@ public class AnnouncementFragment extends Fragment {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Announcement");
@@ -147,8 +154,8 @@ public class AnnouncementFragment extends Fragment {
                     String getDescription = description.getText().toString();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
                     String currentTime = simpleDateFormat.format(new Date());
-                    String assigner = AnnouncementFragment.userInfo.get(SessionManager.KEY_USER_ID);
-                    mAnnouncement.setValue(new AnnouncementData(getDescription, currentTime, assigner));
+                    String assigner = AnnouncementFragment.userInfo.get(SessionManager.KEY_NAME);
+                    mAnnouncement.setValue(new AnnouncementData(getTitle ,getDescription, currentTime, assigner));
                 }
             });
 
