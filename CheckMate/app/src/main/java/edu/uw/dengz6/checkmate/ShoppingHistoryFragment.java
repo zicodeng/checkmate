@@ -182,7 +182,7 @@ public class ShoppingHistoryFragment extends Fragment {
             String userName = item.userName;
             String totalSpend = "$" + item.totalSpend;
             String totalShoppingList = "Total Shopping Lists: " + item.totalShoppingLists;
-            String since = item.since;
+            String since = "Since: " + item.since;
 
             viewHolder.txtUserName.setText(userName);
             viewHolder.txtTotalSpend.setText("Total Spend: " + totalSpend);
