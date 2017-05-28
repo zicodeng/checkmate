@@ -8,11 +8,18 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -23,8 +30,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -129,15 +139,115 @@ public class AllTasksFragment extends Fragment {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             builder.setTitle("Add a New Task");
 
-            View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.add_new_task, (ViewGroup) getView(), false);
+            final View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.add_new_task, (ViewGroup) getView(), false);
 
             // Set up the input
             final EditText taskTitle = (EditText) viewInflated.findViewById(R.id.task_title);
             final EditText taskDetail = (EditText) viewInflated.findViewById(R.id.task_detail);
+            DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                            userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users");
+            final List<CharSequence> users = new ArrayList<>();
+            final List<String> usersID = new ArrayList<>();
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+               @Override
+               public void onDataChange(DataSnapshot dataSnapshot) {
+                   Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                   for (Map.Entry<String, Object> entry : data.entrySet()) {
+                       Map singleUser = (Map) entry.getValue();
+                       users.add((String)singleUser.get("name"));
+                       usersID.add(entry.getKey());
+                   }
+               }
+
+               @Override
+               public void onCancelled(DatabaseError databaseError) {
+
+               };
+           });
+
+            //Set spinner and drop down list
+            final String[] assignee = {""};
+            final Spinner spinner = (Spinner) viewInflated.findViewById(R.id.mySpinner);
+            final ArrayAdapter<CharSequence> adapter =  new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item,users);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+            spinner.setAdapter(adapter);
+            //TODO: THIS FUNCTION IS NEVER CALLED ???!
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    assignee[0] = (String) parent.getItemAtPosition(position);
+                    Log.v(TAG, usersID.get(position));
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+
+            //Time picker
+            final EditText time = (EditText) viewInflated.findViewById(R.id.task_due_time);
+            time.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Dialog timePickerDialog = new Dialog(getContext());
+                    timePickerDialog.setContentView(R.layout.custom_time_picker);
+                    TimePicker picker = (TimePicker) timePickerDialog.findViewById(R.id.timePicker1);
+                    picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+                        @Override
+                        public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                            time.setText(hourOfDay+":"+minute);
+                            Log.v(TAG, "Changed");
+                        }
+                    });
+                    timePickerDialog.show();
+                    Button button = (Button) timePickerDialog.findViewById(R.id.button2);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            timePickerDialog.dismiss();
+                        }
+                    });
+                }
+            });
+            //Date picker
+            final EditText date = (EditText) viewInflated.findViewById(R.id.task_due_date);
+            date.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Dialog datePickerDialog = new Dialog(getContext());
+                    datePickerDialog.setContentView(R.layout.custom_date_picker);
+                    DatePicker datePicker = (DatePicker) datePickerDialog.findViewById(R.id.datePicker1);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+
+                        @Override
+                        public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                            date.setText(year + "-" + (month+1) + "-" + dayOfMonth);
+                            Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
+
+                        }
+                    });
+                    datePickerDialog.show();
+                    Button button = (Button) datePickerDialog.findViewById(R.id.button3);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            datePickerDialog.dismiss();
+                        }
+                    });
+                }
+            });
+
+
 
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             builder.setView(viewInflated);
@@ -157,8 +267,8 @@ public class AllTasksFragment extends Fragment {
                     String detail = taskDetail.getText().toString();
                     SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     String createdOn = dt.format(new Date());
-                    String assigner = AllTasksFragment.userInfo.get(SessionManager.KEY_USER_ID);
-                    mTask.setValue(new TaskData(title, detail, createdOn, createdOn, assigner, assigner));
+                    String assigner = AllTasksFragment.userInfo.get(SessionManager.KEY_NAME);
+                    mTask.setValue(new TaskData(title, detail, createdOn, createdOn, assigner, assignee[0]));
                 }
             });
 

@@ -17,6 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -112,7 +115,13 @@ public class SignupActivity extends AppCompatActivity {
                                             Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
                                         } else {
                                             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
-                                            User user = new User(name, email, password);
+
+                                            // Date of creation
+                                            // Get current date
+                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                                            String currentDate = simpleDateFormat.format(new Date());
+
+                                            User user = new User(name, email, password, currentDate);
                                             DatabaseReference userPush = userRef.push();
                                             // Generate a random value as user ID
                                             final String userID = userPush.getKey();
