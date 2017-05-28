@@ -26,6 +26,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by iguest on 5/21/17.
@@ -186,6 +188,12 @@ public class ShoppingListFragment extends Fragment {
 
                     // Inform the user
                     Toast.makeText(getActivity(), "New shopping list added", Toast.LENGTH_SHORT).show();
+
+                    // Send notification to group members
+                    // P1: group name
+                    // P2: message
+                    sendShoppingNotificationToGroup(groupName, ownerName + " just added a new shopping list called \"" +
+                            shoppingListName + "\".");
                 }
             });
 
@@ -198,5 +206,22 @@ public class ShoppingListFragment extends Fragment {
 
             return builder.create();
         }
+    }
+
+    public static void sendShoppingNotificationToGroup(String groupName, String message) {
+
+        // Create a shoppingNotification field
+        // Our Node.js server will take this field as entry to send notification to users belong to this group
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/notificationRequests");
+
+        Map notification = new HashMap<>();
+        notification.put("groupName", groupName);
+        notification.put("message", message);
+
+        // Tell server this is a shopping notification
+        notification.put("category", "Shopping");
+
+        ref.push().setValue(notification);
     }
 }
