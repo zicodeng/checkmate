@@ -25,7 +25,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 
 /**
@@ -41,7 +40,6 @@ public class AnnouncementFragment extends Fragment {
     private AnnouncementAdapter adapter;
     private RecyclerView announcementRecyclerView;
     private String groupName;
-    protected static HashMap<String, String> userInfo;
 
     public AnnouncementFragment() {
         // Required empty public constructor
@@ -153,7 +151,8 @@ public class AnnouncementFragment extends Fragment {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
                     String currentTime = simpleDateFormat.format(new Date());
                     String assigner = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
-                    mAnnouncement.setValue(new AnnouncementData(getTitle ,getDescription, currentTime, assigner));
+                    String announcementID = mAnnouncement.getKey();
+                    mAnnouncement.setValue(new AnnouncementData(announcementID ,getTitle ,getDescription, currentTime, assigner));
                 }
             });
 

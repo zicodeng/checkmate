@@ -2,10 +2,15 @@ package edu.uw.dengz6.checkmate;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -48,24 +53,25 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         AnnouncementData data = announcementLists.get(position);
+        final String announcementID = data.announcementID;
         viewHolder.content.setText(data.content);
         viewHolder.description.setText(data.description);
         viewHolder.assigner.setText(data.createdBy);
         viewHolder.createdOn.setText(data.createdOn);
-//        viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener(){
-//
-//            @Override
-//            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//                final SessionManager sessionManager = new SessionManager(context);
-//                String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
-//
-//                DatabaseReference ref = FirebaseDatabase.getInstance()
-//                        .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-//                                groupName + "/announcements/");
-//                ref.child(announcementID).removeValue();
-//                Toast.makeText(context, "Announcement removed", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+        viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener(){
+
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                final SessionManager sessionManager = new SessionManager(context);
+                String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+                DatabaseReference ref = FirebaseDatabase.getInstance()
+                        .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                                groupName + "/announcements/");
+                ref.child(announcementID).removeValue();
+                Toast.makeText(context, "Announcement removed", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
