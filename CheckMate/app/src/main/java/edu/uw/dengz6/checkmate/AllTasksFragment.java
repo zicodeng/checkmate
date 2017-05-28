@@ -265,7 +265,7 @@ public class AllTasksFragment extends Fragment {
                     dialog.dismiss();
                     String title = taskTitle.getText().toString();
                     String detail = taskDetail.getText().toString();
-                    SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
                     String createdOn = dt.format(new Date());
                     String assigner = AllTasksFragment.userInfo.get(SessionManager.KEY_NAME);
                     mTask.setValue(new TaskData(title, detail, createdOn, createdOn, assigner, assignee[0]));
