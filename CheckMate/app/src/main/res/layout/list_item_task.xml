@@ -3,8 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginLeft="10dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layout_marginBottom="@dimen/spacing_medium"
+    android:background="@color/white"
+    >
 
     <TextView
         android:id="@+id/task_item_title"
@@ -15,4 +17,36 @@
         android:textStyle="bold"
         android:text="Sweep the floor"
         android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/task_item_dueOn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="05/20/2017 3:00 PM"
+        android:textSize="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp" />
+
+    <TextView
+        android:id="@+id/task_item_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/task_item_title"
+        android:padding="5dp"
+        android:text="Make sure no dirt on the floor. Return the bloom after you are done."
+        android:textSize="15dp" />
+
+    <TextView
+        android:id="@+id/task_item_assignee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="Assignee: Zico Deng"
+        android:textSize="15dp"
+        android:layout_below="@id/task_item_detail"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp" />
+
+
 </RelativeLayout>

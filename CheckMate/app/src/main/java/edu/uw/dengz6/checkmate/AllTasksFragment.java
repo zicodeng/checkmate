@@ -192,8 +192,8 @@ public class AllTasksFragment extends Fragment {
 
 
             //Time picker
-            final EditText time = (EditText) viewInflated.findViewById(R.id.task_due_time);
-            time.setOnClickListener(new View.OnClickListener() {
+            final EditText dueTime = (EditText) viewInflated.findViewById(R.id.task_due_time);
+            dueTime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final Dialog timePickerDialog = new Dialog(getContext());
@@ -202,7 +202,11 @@ public class AllTasksFragment extends Fragment {
                     picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                         @Override
                         public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                            time.setText(hourOfDay+":"+minute);
+                            if (hourOfDay > 13) {
+                                dueTime.setText(hourOfDay+":"+minute + " AM");
+                            } else {
+                                dueTime.setText(hourOfDay - 12 +":"+minute + " PM");
+                            }
                             Log.v(TAG, "Changed");
                         }
                     });
@@ -217,8 +221,8 @@ public class AllTasksFragment extends Fragment {
                 }
             });
             //Date picker
-            final EditText date = (EditText) viewInflated.findViewById(R.id.task_due_date);
-            date.setOnClickListener(new View.OnClickListener() {
+            final EditText dueDate = (EditText) viewInflated.findViewById(R.id.task_due_date);
+            dueDate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final Dialog datePickerDialog = new Dialog(getContext());
@@ -230,7 +234,7 @@ public class AllTasksFragment extends Fragment {
 
                         @Override
                         public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                            date.setText(year + "-" + (month+1) + "-" + dayOfMonth);
+                            dueDate.setText((month+1) + "/" + dayOfMonth + "/" + year);
                             Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
 
                         }
@@ -260,14 +264,14 @@ public class AllTasksFragment extends Fragment {
                                     userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
 
                     DatabaseReference mTask = ref.push();
-                    // TODO: roommate dropdown and date picker
                     dialog.dismiss();
                     String title = taskTitle.getText().toString();
                     String detail = taskDetail.getText().toString();
                     SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
                     String createdOn = dt.format(new Date());
+                    String dueOn = dueDate.getText().toString() + dueTime.getText().toString();
                     String assigner = AllTasksFragment.userInfo.get(SessionManager.KEY_NAME);
-                    mTask.setValue(new TaskData(title, detail, createdOn, createdOn, assigner, assignee[0]));
+                    mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assigner));
                 }
             });
 

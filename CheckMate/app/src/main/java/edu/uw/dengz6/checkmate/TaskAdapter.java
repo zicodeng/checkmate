@@ -19,7 +19,7 @@ public class TaskAdapter extends ArrayAdapter<TaskData> {
     public static class ViewHolder {
         TextView title;
         TextView dueOn;
-        TextView details;
+        TextView detail;
         TextView assignee;
         int position;
     }
@@ -40,14 +40,18 @@ public class TaskAdapter extends ArrayAdapter<TaskData> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_task, parent, false);
             holder = new ViewHolder();
             holder.title = (TextView) convertView.findViewById(R.id.task_item_title);
-            // TODO: complete the rest view binding
+            holder.detail = (TextView) convertView.findViewById(R.id.task_item_detail);
+            holder.dueOn = (TextView) convertView.findViewById(R.id.task_item_dueOn);
+            holder.assignee = (TextView) convertView.findViewById(R.id.task_item_assignee);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         holder.title.setText(data.title);
-        // TODO: complete the rest view binding
+        holder.detail.setText(data.detail);
+        holder.dueOn.setText("Due On" + data.dueOn);
+        holder.assignee.setText("Assignee: " + data.assignee);
         // Return the completed view to render on screen
         return convertView;
     }

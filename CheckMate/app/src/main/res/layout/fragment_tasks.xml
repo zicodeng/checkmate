@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="edu.uw.dengz6.checkmate.TasksFragment"
+    android:background="@color/colorBackground"
     >
 
     <android.support.v4.view.ViewPager
