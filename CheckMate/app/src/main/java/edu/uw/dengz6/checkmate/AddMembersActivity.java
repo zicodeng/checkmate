@@ -97,6 +97,4 @@ public class AddMembersActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }
