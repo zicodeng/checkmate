@@ -171,6 +171,7 @@ public class AllTasksFragment extends Fragment {
 
             //Set spinner and drop down list
             final String[] assignee = {""};
+            final String[] assigneeId = {""};
             final Spinner spinner = (Spinner) viewInflated.findViewById(R.id.mySpinner);
             final ArrayAdapter<CharSequence> adapter =  new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item,users);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
@@ -180,6 +181,7 @@ public class AllTasksFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     assignee[0] = (String) parent.getItemAtPosition(position);
+                    assigneeId[0] = usersID.get(position);
                     Log.v(TAG, usersID.get(position));
 
                 }
@@ -272,6 +274,26 @@ public class AllTasksFragment extends Fragment {
                     String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
                     String assigner = AllTasksFragment.userInfo.get(SessionManager.KEY_NAME);
                     mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assigner));
+
+
+
+                    final DatabaseReference totalTasksref = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + assigneeId[0] + "/totalTasks");
+
+                    totalTasksref.addValueEventListener(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            totalTasksref.setValue((Integer)dataSnapshot.getValue() + 1) ;
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
             });
 
