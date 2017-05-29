@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,6 +43,8 @@ public class AddMembersActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final EditText rowTextView = new EditText(AddMembersActivity.this);
+                rowTextView.setHint("Group Member Email");
+                rowTextView.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 myLinearLayout.addView(rowTextView);
                 myTextViews.add(rowTextView);
             }
@@ -94,6 +97,4 @@ public class AddMembersActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }
