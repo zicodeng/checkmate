@@ -124,7 +124,6 @@ public class AllTasksFragment extends Fragment {
         return rootView;
     };
 
-
     public static class AddNewTaskFragment extends DialogFragment {
 
         public static AddNewTaskFragment newInstance() {

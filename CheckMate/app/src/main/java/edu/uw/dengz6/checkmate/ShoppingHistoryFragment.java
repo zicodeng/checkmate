@@ -189,21 +189,6 @@ public class ShoppingHistoryFragment extends Fragment {
             viewHolder.txtTotalShoppingLists.setText(totalShoppingList);
             viewHolder.txtSince.setText(since);
             viewHolder.txtTotalSpendFocus.setText(totalSpend);
-
-            // Click a shopping list to see detail
-//            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//                    // Start shopping list detail activity
-//                    Intent shoppingListDetailIntent = new Intent(context, ShoppingListDetailActivity.class);
-//
-//                    // Include shopping list ID and send it to "Shopping List Detail Activity"
-//                    shoppingListDetailIntent.putExtra(EXTRA_SHOPPING_LIST_ID, shoppingListID);
-//
-//                    context.startActivity(shoppingListDetailIntent);
-//                }
-//            });
         }
 
         @Override
