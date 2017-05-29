@@ -53,7 +53,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/task_completed_total_tasks_focus"
+            android:id="@+id/task_completed_total_focus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

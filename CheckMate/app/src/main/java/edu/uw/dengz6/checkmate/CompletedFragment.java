@@ -51,7 +51,7 @@ public class CompletedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView =  inflater.inflate(R.layout.fragment_shopping_history, container, false);
+        View rootView =  inflater.inflate(R.layout.fragment_completed, container, false);
 
         // Initialize "Shopping History List"
         completedTasksList = new ArrayList<TaskCompletedData>();
@@ -93,16 +93,16 @@ public class CompletedFragment extends Fragment {
                     final String createdOn = mUser.createdOn;
 
                     // Set up Firebase connection
-                    DatabaseReference totalTasksref = FirebaseDatabase.getInstance()
+                    DatabaseReference totalTasksRef = FirebaseDatabase.getInstance()
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
                                     userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + userID + "/totalTasks");
 
-                    totalTasksref.addValueEventListener(new ValueEventListener() {
+                    totalTasksRef.addValueEventListener(new ValueEventListener() {
 
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            int totalTasks = (Integer) dataSnapshot.getValue();
+                            int totalTasks = ((Long) dataSnapshot.getValue()).intValue();
 
                             TaskCompletedData mTaskCompletedData =
                                     new TaskCompletedData(userName, totalTasks, createdOn);
@@ -139,7 +139,7 @@ public class CompletedFragment extends Fragment {
             private TextView txtUserName;
             private TextView txtTotalCompleted;
             private TextView txtSince;
-            private TextView txtTotalCompleletedFocus;
+            private TextView txtTotalCompletedFocus;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -148,7 +148,7 @@ public class CompletedFragment extends Fragment {
                 txtUserName = (TextView) itemView.findViewById(R.id.task_completed_username);
                 txtTotalCompleted = (TextView) itemView.findViewById(R.id.task_completed_total_tasks);
                 txtSince = (TextView) itemView.findViewById(R.id.task_completed_since);
-                txtTotalCompleletedFocus = (TextView) itemView.findViewById(R.id.task_completed_total_tasks_focus);
+                txtTotalCompletedFocus = (TextView) itemView.findViewById(R.id.task_completed_total_focus);
             }
         }
 
@@ -160,7 +160,7 @@ public class CompletedFragment extends Fragment {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // P1: which layout template file we want each item to inflate
-            View view = inflater.inflate(R.layout.list_item_shopping_history, parent, false);
+            View view = inflater.inflate(R.layout.list_item_task_completed, parent, false);
 
             return new ViewHolder(view);
         }
@@ -179,7 +179,7 @@ public class CompletedFragment extends Fragment {
             viewHolder.txtUserName.setText(userName);
             viewHolder.txtTotalCompleted.setText("Total Completed Tasks: " + totalCompleted);
             viewHolder.txtSince.setText(since);
-            viewHolder.txtTotalCompleletedFocus.setText(totalCompleted);
+            viewHolder.txtTotalCompletedFocus.setText( "" + totalCompleted );
         }
 
         @Override
