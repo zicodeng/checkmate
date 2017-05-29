@@ -151,7 +151,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
             builder.setView(viewInflated);
 
-            // Establish connection and set "shoppingLists" as base URL
+            // Establish connection and set "groups" as base URL
             final DatabaseReference ref = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName);
 
