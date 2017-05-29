@@ -1,51 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="edu.uw.dengz6.checkmate.AddMembersActivity"
-    style="@style/AppTheme.Dark"
->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add people you know to your newly created group"
-        android:id="@+id/heading"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="13dp" />
-    <LinearLayout android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:id="@+id/linearlayout"
-        android:orientation="vertical"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/heading">
-    </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="You can add as many people as you want"
-        android:id="@+id/description"
-        android:layout_below="@+id/linearlayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add member"
-        android:id="@+id/addMemberButton"
-        android:layout_below="@+id/description"
-        android:layout_alignStart="@+id/heading"
-        android:layout_marginTop="34dp"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Submit List"
-        android:id="@+id/submitButton"
-        android:layout_alignBaseline="@+id/addMemberButton"
-        android:layout_alignBottom="@+id/addMemberButton"
-        android:layout_alignEnd="@+id/heading" />
+    >
 
-</RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/spacing_large"
+        >
+
+
+        <TextView
+            android:id="@+id/heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:text="Let's add some members to your group"
+            android:textSize="@dimen/title_text_size"
+            android:textColor="@color/colorPrimary"
+            />
+
+        <LinearLayout
+            android:id="@+id/linearlayout"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            >
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add member"
+            android:id="@+id/addMemberButton"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:background="@color/colorAccent"
+            android:textColor="@color/white"
+            />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:layout_marginBottom="@dimen/spacing_large"
+            android:text="Submit List"
+            android:id="@+id/submitButton"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+            />
+
+    </LinearLayout>
+
+</ScrollView>
