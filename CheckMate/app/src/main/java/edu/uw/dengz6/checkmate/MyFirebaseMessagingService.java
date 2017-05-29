@@ -23,16 +23,34 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_annoucement)
-                            .setContentTitle("My notification")
-                            .setContentText(remoteMessage.getNotification().getBody());
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            // Builds the notification and issues it.
-            mNotifyMgr.notify(1, mBuilder.build());
+
+            String notificationTitle = remoteMessage.getNotification().getTitle();
+            String notificationBody = remoteMessage.getNotification().getBody();
+
+            // Handle "Shopping Notification"
+            if(notificationTitle.equalsIgnoreCase("shopping")) {
+
+                // Build a shopping notification
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setSmallIcon(R.drawable.ic_checkmate_logo)
+                                .setContentTitle(notificationTitle)
+                                .setContentText(notificationBody);
+
+                NotificationManager mNotifyMgr =
+                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+                // Builds the notification and issues it.
+                mNotifyMgr.notify(1, mBuilder.build());
+
+            } else if (notificationTitle.equalsIgnoreCase("tasks")) {
+
+                // Handle "Tasks Notification"
+
+            } else if (notificationTitle.equalsIgnoreCase("announcement")) {
+
+                // Handle "Announcement Notification"
+            }
         }
     }
 

@@ -220,6 +220,7 @@ public class AllTasksFragment extends Fragment {
                     });
                 }
             });
+
             //Date picker
             final EditText dueDate = (EditText) viewInflated.findViewById(R.id.task_due_date);
             dueDate.setOnClickListener(new View.OnClickListener() {
@@ -249,7 +250,6 @@ public class AllTasksFragment extends Fragment {
                     });
                 }
             });
-
 
 
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text

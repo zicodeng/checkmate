@@ -64,11 +64,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        // Get current group name
+        final SessionManager sessionManager = new SessionManager(this);
+        String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
         //Firebase cloud message
-        String username = "puf";
-        FirebaseMessaging.getInstance().subscribeToTopic("user_"+username);
-
-
+        FirebaseMessaging.getInstance().subscribeToTopic("group_" + groupName);
 
         super.onCreate(savedInstanceState);
         session = new SessionManager(getApplicationContext());
