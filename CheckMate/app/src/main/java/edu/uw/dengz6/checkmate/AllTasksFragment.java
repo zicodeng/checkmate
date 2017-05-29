@@ -194,56 +194,61 @@ public class AllTasksFragment extends Fragment {
 
             //Time picker
             final EditText time = (EditText) viewInflated.findViewById(R.id.task_due_time);
-            time.setOnClickListener(new View.OnClickListener() {
+            time.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public void onClick(View v) {
-                    final Dialog timePickerDialog = new Dialog(getContext());
-                    timePickerDialog.setContentView(R.layout.custom_time_picker);
-                    TimePicker picker = (TimePicker) timePickerDialog.findViewById(R.id.timePicker1);
-                    picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-                        @Override
-                        public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                            time.setText(hourOfDay+":"+minute);
-                            Log.v(TAG, "Changed");
-                        }
-                    });
-                    timePickerDialog.show();
-                    Button button = (Button) timePickerDialog.findViewById(R.id.button2);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            timePickerDialog.dismiss();
-                        }
-                    });
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus){
+                        final Dialog timePickerDialog = new Dialog(getContext());
+                        timePickerDialog.setContentView(R.layout.custom_time_picker);
+                        TimePicker picker = (TimePicker) timePickerDialog.findViewById(R.id.timePicker1);
+                        picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+                            @Override
+                            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                                time.setText(hourOfDay+":"+minute);
+                                Log.v(TAG, "Changed");
+                            }
+                        });
+                        timePickerDialog.show();
+                        Button button = (Button) timePickerDialog.findViewById(R.id.button2);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                timePickerDialog.dismiss();
+                            }
+                        });
+                    }
                 }
             });
+
             //Date picker
             final EditText date = (EditText) viewInflated.findViewById(R.id.task_due_date);
-            date.setOnClickListener(new View.OnClickListener() {
+            date.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public void onClick(View v) {
-                    final Dialog datePickerDialog = new Dialog(getContext());
-                    datePickerDialog.setContentView(R.layout.custom_date_picker);
-                    DatePicker datePicker = (DatePicker) datePickerDialog.findViewById(R.id.datePicker1);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(System.currentTimeMillis());
-                    datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus) {
+                        final Dialog datePickerDialog = new Dialog(getContext());
+                        datePickerDialog.setContentView(R.layout.custom_date_picker);
+                        DatePicker datePicker = (DatePicker) datePickerDialog.findViewById(R.id.datePicker1);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(System.currentTimeMillis());
+                        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
 
-                        @Override
-                        public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                            date.setText(year + "-" + (month+1) + "-" + dayOfMonth);
-                            Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
+                            @Override
+                            public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                                date.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
+                                Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
 
-                        }
-                    });
-                    datePickerDialog.show();
-                    Button button = (Button) datePickerDialog.findViewById(R.id.button3);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            datePickerDialog.dismiss();
-                        }
-                    });
+                            }
+                        });
+                        datePickerDialog.show();
+                        Button button = (Button) datePickerDialog.findViewById(R.id.button3);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                datePickerDialog.dismiss();
+                            }
+                        });
+                    }
                 }
             });
 
