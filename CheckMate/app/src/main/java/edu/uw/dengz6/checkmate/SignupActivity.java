@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -75,7 +76,6 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        _signupButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -97,9 +97,45 @@ public class SignupActivity extends AppCompatActivity {
                     new android.os.Handler().postDelayed(
                             new Runnable() {
                                 public void run() {
-                                    Toast.makeText(SignupActivity.this, "Please pick a different group name", Toast.LENGTH_SHORT).show();
-                                    _signupButton.setEnabled(true);
-                                    progressDialog.dismiss();
+                                    Toast.makeText(SignupActivity.this, "Group name has already been picked, signing you up with existing group", Toast.LENGTH_SHORT).show();
+                                    final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
+                                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if(lookForUser((Map<String,Object>) dataSnapshot.getValue(), email)){
+                                                Toast.makeText(SignupActivity.this, "Email has been picked, did you mean to log in instead?", Toast.LENGTH_SHORT).show();
+                                                progressDialog.dismiss();
+                                            }else{
+                                                // Date of creation
+                                                // Get current date
+                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                                                String currentDate = simpleDateFormat.format(new Date());
+
+                                                User user = new User(name, email, password, currentDate);
+                                                DatabaseReference userPush = usersRef.push();
+                                                // Generate a random value as user ID
+                                                final String userID = userPush.getKey();
+                                                userPush.setValue(user, new DatabaseReference.CompletionListener() {
+                                                    @Override
+                                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                        if (databaseError != null) {
+                                                            Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
+                                                        }else{ //if there are no errors then we proceed to adding people into the group
+                                                            // On complete call either onSignupSuccess or onSignupFailed
+                                                            // depending on success
+                                                            onSignupSuccess(groupName, email, name, userID);
+                                                            progressDialog.dismiss();
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
                                 }
                             }, 1000);
                 }else{
@@ -154,6 +190,20 @@ public class SignupActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    //Method look for user in the user property of the group
+    public boolean lookForUser(Map<String, Object> data, String email){
+        for (Map.Entry<String, Object> entry : data.entrySet()){
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            //Get phone field and append to list
+            if(email.equals(singleUser.get("email"))){
+                return true;
+            }
+        }
+        return false;
     }
 
     //Passing in the group key so we can track which group are we talking about

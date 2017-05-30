@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                                             }
                                         }, 2000);
                             }else{
+                                progressDialog.dismiss();
                                 Toast.makeText(LoginActivity.this, "wrong email and password combination ", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -107,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
                 }else{
+                    progressDialog.dismiss();
                     Toast.makeText(LoginActivity.this, "No group found", Toast.LENGTH_SHORT).show();
                 }
             }
