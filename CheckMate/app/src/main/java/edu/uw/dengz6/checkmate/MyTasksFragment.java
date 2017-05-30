@@ -1,13 +1,18 @@
 package edu.uw.dengz6.checkmate;
 
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -76,6 +81,13 @@ public class MyTasksFragment extends Fragment {
         // Attach the adapter to a ListView
         ListView listView = (ListView) rootView.findViewById(R.id.all_tasks_list_view);
         listView.setAdapter(adapter);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String taskID = tasks.get(position).taskID;
+                return false;
+            }
+        });
 
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
@@ -93,7 +105,8 @@ public class MyTasksFragment extends Fragment {
                     for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
                         //handle each task
                         TaskData task = taskSnapshot.getValue(TaskData.class);
-                        if (task.assignee.equals(userInfo.get(SessionManager.KEY_NAME))) {
+                        // show incomplete tasks, the current user as the assignee
+                        if (task.assignee.equals(userInfo.get(SessionManager.KEY_NAME)) && !task.isCompleted) {
                             tasks.add(task);
                         }
                     }
@@ -108,5 +121,95 @@ public class MyTasksFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return rootView;
-    };
+    }
+
+    ;
+
+
+    public static class ManageTaskFragment extends DialogFragment {
+
+        private static final String TASK_ID_KEY = "Task_ID_Key";
+
+        public static ManageTaskFragment newInstance(String TaskID) {
+
+            Bundle args = new Bundle();
+
+            args.putString(TASK_ID_KEY, TaskID);
+
+            ManageTaskFragment fragment = new ManageTaskFragment();
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            final String taskID = getArguments().getString(TASK_ID_KEY);
+
+            final SessionManager sessionManager = new SessionManager(getActivity());
+            final String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+            final String userID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Manage Task");
+            View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.manage_task, (ViewGroup) getView(), false);
+            builder.setView(viewInflated);
+            // Establish connection and set "tasks" as base URL
+            final DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName);
+
+            // Set up the buttons
+            builder.setPositiveButton("Mark Completed", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    final DatabaseReference tasksRef = ref.child("tasks").child(taskID);
+
+                    // Retrieve the tasks and update its "isCompleted" field
+                    tasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            tasksRef.child("isCompleted").setValue(true);
+
+                            // Add the updated total to "" under that user
+                            final DatabaseReference totalTasksRef = ref.child("users").child(userID).child("totalTasks");
+                            totalTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    totalTasksRef.setValue(((Long) dataSnapshot.getValue()).intValue() + 1);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    // Inform the user
+                    Toast.makeText(getActivity(), "Task Marked as Completed", Toast.LENGTH_SHORT).show();
+                    // Close the dialog
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ref.child("tasks").child(taskID).removeValue();
+                    // Inform the user
+                    Toast.makeText(getActivity(), "Task Deleted", Toast.LENGTH_SHORT).show();
+                    // Close the dialog
+                    dialog.dismiss();
+                }
+            });
+            return builder.create();
+        }
+    }
 }

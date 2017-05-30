@@ -9,15 +9,25 @@ public class User {
     public String email;
     public String password;
     public String createdOn;
+    public int totalTasks;
 
     public User() {
         // Empty constructor required for Firebase
     }
 
     public User(String name, String email, String password, String createdOn){
+        this(name, email, password, createdOn, 0);
         this.name = name;
         this.email = email;
         this.password = password;
         this.createdOn = createdOn;
+    }
+
+    public User(String name, String email, String password, String createdOn, int totalTasks){
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.createdOn = createdOn;
+        this.totalTasks = totalTasks;
     }
 }
