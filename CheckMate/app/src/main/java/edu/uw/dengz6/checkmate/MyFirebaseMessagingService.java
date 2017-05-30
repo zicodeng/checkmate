@@ -20,6 +20,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // Pending intent ID
     private static final int SHOPPING_PENDING_INTENT_ID = 1;
 
+    private static final int ANNOUNCEMENT_NOTIFICATION_ID = 1;
+
     public MyFirebaseMessagingService() {
 
     }
@@ -70,8 +72,34 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Handle "Tasks Notification"
 
             } else if (notificationTitle.equalsIgnoreCase("announcement")) {
-
                 // Handle "Announcement Notification"
+                // Create a "Announcement Intent"
+                Intent AnnouncementIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+                // When the user clicks the notification, navigate him to the "Shopping" menu
+                AnnouncementIntent.putExtra(MENU_FRAGMENT_KEY, "Announcement");
+
+                // Create a "Shopping Pending Intent"
+                PendingIntent announcementPendingIntent = PendingIntent.getActivity(
+                        this,
+                        SHOPPING_PENDING_INTENT_ID,
+                        AnnouncementIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+                // Build a shopping notification
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_checkmate_logo)
+                        .setAutoCancel(true)
+                        .setContentTitle(notificationTitle)
+                        .setContentText(notificationBody)
+                        .setContentIntent(announcementPendingIntent);
+
+                NotificationManager mNotifyMgr =
+                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+                // Builds the notification and issues it.
+                mNotifyMgr.notify(ANNOUNCEMENT_NOTIFICATION_ID, mBuilder.build());
             }
         }
     }
