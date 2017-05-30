@@ -1,10 +1,16 @@
 package edu.uw.dengz6.checkmate;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,6 +39,8 @@ public class MyTasksFragment extends Fragment {
     protected static HashMap<String, String> userInfo;
     protected static ArrayList<TaskData> tasks;
     private TaskAdapter adapter;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     public MyTasksFragment() {
         // Required empty public constructor
@@ -94,6 +104,29 @@ public class MyTasksFragment extends Fragment {
                         //handle each task
                         TaskData task = taskSnapshot.getValue(TaskData.class);
                         if (task.assignee.equals(userInfo.get(SessionManager.KEY_NAME))) {
+                            //converting the due date to long and set the alarm 10 minutes before due time
+                            SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                            long timeDue = 0;
+                            try {
+                                timeDue = dt.parse(task.dueOn).getTime();
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            long currentTime = System.currentTimeMillis();
+                            if((currentTime - timeDue) >= 1000 * 60 * 10){
+                                timeDue = timeDue - 1000 * 60 * 10;
+                            }
+                            if(currentTime > timeDue){
+                                Log.v(TAG, "passed due time");
+                            }else {
+                                alarmMgr = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
+                                Intent intent = new Intent(getContext(), MainActivity.class);
+                                alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
+
+                                // setRepeating() lets you specify a precise custom interval--in this case,
+                                // 5 minutes.
+                                alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+                            }
                             tasks.add(task);
                         }
                     }
@@ -105,8 +138,6 @@ public class MyTasksFragment extends Fragment {
 
             }
         });
-
-        // Inflate the layout for this fragment
         return rootView;
     };
 }
