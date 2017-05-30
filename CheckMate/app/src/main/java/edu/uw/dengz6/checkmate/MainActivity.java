@@ -139,7 +139,11 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 return true; //handled
-
+            case R.id.action_add_member:
+                String groupName = session.getUserDetails().get(session.KEY_GROUP_NAME);
+                Intent addNewMemberIntent = new Intent(getApplicationContext(), AddMembersActivity.class);
+                addNewMemberIntent.putExtra("group_id", groupName);
+                startActivityForResult(addNewMemberIntent, 0);
             default:
                 return super.onOptionsItemSelected(item);
         }
