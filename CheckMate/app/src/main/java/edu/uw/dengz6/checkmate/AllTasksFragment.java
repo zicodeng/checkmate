@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +93,17 @@ public class AllTasksFragment extends Fragment {
         // Attach the adapter to a ListView
         ListView listView = (ListView) rootView.findViewById(R.id.all_tasks_list_view);
         listView.setAdapter(adapter);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String taskID = tasks.get(position).taskID;
+                // Create a dialog and ask the user to
+                // either delete the task or mark it as completed
+                DialogFragment taskManageFragment = TaskManageFragment.newInstance(taskID);
+                taskManageFragment.show(((FragmentActivity) getContext()).getSupportFragmentManager(), "Manage_Task");
+                return false;
+            }
+        });
 
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
