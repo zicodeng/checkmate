@@ -7,15 +7,17 @@ package edu.uw.dengz6.checkmate;
 public class TaskCompletedData {
     public String userName;
     public int totalCompletedTasks;
+    public int totalAssignedTasks;
     public String since;
 
     public TaskCompletedData() {
 
     }
 
-    public TaskCompletedData(String userName, int totalCompletedTasks, String since) {
+    public TaskCompletedData(String userName, int totalCompletedTasks, int totalAssignedTasks, String since) {
         this.userName = userName;
         this.totalCompletedTasks = totalCompletedTasks;
+        this.totalAssignedTasks = totalAssignedTasks;
         this.since = since;
     }
 }

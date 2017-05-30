@@ -285,22 +285,23 @@ public class AllTasksFragment extends Fragment {
 //                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
 //                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + assigneeId[0] + "/totalTasks");
 
-//                    final DatabaseReference totalTasksRef = FirebaseDatabase.getInstance()
-//                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-//                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + userInfo.get(SessionManager.KEY_USER_ID) + "/totalTasks");
-//
-//                    totalTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            totalTasksRef.setValue(((Long) dataSnapshot.getValue()).intValue() + 1);
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                    });
+                    final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
+                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + userInfo.get(SessionManager.KEY_USER_ID) + "/tasksAssigned");
+
+                    tasksAssignedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            tasksAssignedRef.setValue(((Long) dataSnapshot.getValue()).intValue() + 1);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    Toast.makeText(getActivity(), "Task Added", Toast.LENGTH_SHORT).show();
                 }
             });
 

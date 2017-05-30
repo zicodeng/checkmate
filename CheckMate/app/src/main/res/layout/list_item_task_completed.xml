@@ -35,7 +35,15 @@
                 />
 
             <TextView
-                android:id="@+id/task_completed_total_tasks"
+                android:id="@+id/task_completed_total_assigned"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total Completed Tasks: 20"
+                android:layout_marginTop="@dimen/spacing_small"
+                />
+
+            <TextView
+                android:id="@+id/task_completed_total_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total Completed Tasks: 20"

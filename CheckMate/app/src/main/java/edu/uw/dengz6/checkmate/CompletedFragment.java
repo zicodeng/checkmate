@@ -84,39 +84,16 @@ public class CompletedFragment extends Fragment {
 
                 // Loop through each user
                 for (DataSnapshot userSnapShot : dataSnapshot.getChildren()) {
-
                     String userID = userSnapShot.getKey();
-
                     User mUser = userSnapShot.getValue(User.class);
-
                     final String userName = mUser.name;
                     final String createdOn = mUser.createdOn;
-
-                    // Set up Firebase connection
-                    DatabaseReference totalTasksRef = FirebaseDatabase.getInstance()
-                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + userID + "/totalTasks");
-
-                    totalTasksRef.addValueEventListener(new ValueEventListener() {
-
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-
-                            int totalTasks = ((Long) dataSnapshot.getValue()).intValue();
-
-                            TaskCompletedData mTaskCompletedData =
-                                    new TaskCompletedData(userName, totalTasks, createdOn);
-
-                            completedTasksList.add(mTaskCompletedData);
-
-                            adapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                    int tasksAssigned = mUser.tasksAssigned;
+                    int tasksCompleted = mUser.tasksCompleted;
+                    TaskCompletedData mTaskCompletedData =
+                            new TaskCompletedData(userName, tasksCompleted, tasksAssigned, createdOn);
+                    completedTasksList.add(mTaskCompletedData);
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -137,6 +114,7 @@ public class CompletedFragment extends Fragment {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             private TextView txtUserName;
+            private TextView txtTotalAssigned;
             private TextView txtTotalCompleted;
             private TextView txtSince;
             private TextView txtTotalCompletedFocus;
@@ -146,7 +124,8 @@ public class CompletedFragment extends Fragment {
 
                 // Tell our ViewHolder what kind of views it should contain
                 txtUserName = (TextView) itemView.findViewById(R.id.task_completed_username);
-                txtTotalCompleted = (TextView) itemView.findViewById(R.id.task_completed_total_tasks);
+                txtTotalAssigned = (TextView) itemView.findViewById(R.id.task_completed_total_assigned);
+                txtTotalCompleted = (TextView) itemView.findViewById(R.id.task_completed_total_completed);
                 txtSince = (TextView) itemView.findViewById(R.id.task_completed_since);
                 txtTotalCompletedFocus = (TextView) itemView.findViewById(R.id.task_completed_total_focus);
             }
@@ -174,9 +153,11 @@ public class CompletedFragment extends Fragment {
             // Bind data in each item with our ViewHolder
             String userName = item.userName;
             int totalCompleted = item.totalCompletedTasks;
+            int totalAssigned = item.totalAssignedTasks;
             String since = "Since: " + item.since;
 
             viewHolder.txtUserName.setText(userName);
+            viewHolder.txtTotalAssigned.setText("Total Assigned Tasks: " + totalAssigned);
             viewHolder.txtTotalCompleted.setText("Total Completed Tasks: " + totalCompleted);
             viewHolder.txtSince.setText(since);
             viewHolder.txtTotalCompletedFocus.setText( "" + totalCompleted );

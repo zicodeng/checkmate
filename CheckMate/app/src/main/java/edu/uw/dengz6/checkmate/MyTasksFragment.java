@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,10 @@ public class MyTasksFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 String taskID = tasks.get(position).taskID;
+                // Create a dialog and ask the user to
+                // either delete the task or mark it as completed
+                DialogFragment manageTaskFragment = ManageTaskFragment.newInstance(taskID);
+                manageTaskFragment.show(((FragmentActivity) getContext()).getSupportFragmentManager(), "Manage_Task");
                 return false;
             }
         });
@@ -164,6 +169,7 @@ public class MyTasksFragment extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
+
                     final DatabaseReference tasksRef = ref.child("tasks").child(taskID);
 
                     // Retrieve the tasks and update its "isCompleted" field
@@ -172,8 +178,8 @@ public class MyTasksFragment extends Fragment {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             tasksRef.child("isCompleted").setValue(true);
 
-                            // Add the updated total to "" under that user
-                            final DatabaseReference totalTasksRef = ref.child("users").child(userID).child("totalTasks");
+                            // Add the updated total to "tasksCompleted" under that user
+                            final DatabaseReference totalTasksRef = ref.child("users").child(userID).child("tasksCompleted");
                             totalTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -202,7 +208,19 @@ public class MyTasksFragment extends Fragment {
             builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ref.child("tasks").child(taskID).removeValue();
+                    // un-assign the task from the user data
+                    final DatabaseReference totalTasksRef = ref.child("users").child(userID).child("tasksAssigned");
+                    totalTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            totalTasksRef.setValue(((Long) dataSnapshot.getValue()).intValue() - 1);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                     // Inform the user
                     Toast.makeText(getActivity(), "Task Deleted", Toast.LENGTH_SHORT).show();
                     // Close the dialog
