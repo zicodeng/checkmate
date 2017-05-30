@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TasksFragment extends Fragment  {
+public class TasksFragment extends Fragment {
 
     public static final String TAG = "Tasks_Fragment";
 
@@ -34,9 +34,9 @@ public class TasksFragment extends Fragment  {
     }
 
     public static TasksFragment newInstance() {
-        
+
         Bundle args = new Bundle();
-        
+
         TasksFragment fragment = new TasksFragment();
         fragment.setArguments(args);
         return fragment;
@@ -45,7 +45,7 @@ public class TasksFragment extends Fragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView =  inflater.inflate(R.layout.fragment_tasks, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_tasks, container, false);
 
         // Initialize ViewPager
         viewPager = (ViewPager) rootView.findViewById(R.id.pager_tasks);

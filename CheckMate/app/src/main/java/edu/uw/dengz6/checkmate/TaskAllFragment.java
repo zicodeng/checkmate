@@ -122,7 +122,7 @@ public class TaskAllFragment extends Fragment {
                 if (dataSnapshot.getValue() != null) {
                     adapter.clear();
                     tasks.clear();
-                    for (DataSnapshot taskSnapshot: dataSnapshot.getChildren()) {
+                    for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
                         //handle each task
                         TaskData task = taskSnapshot.getValue(TaskData.class);
                         // show incomplete tasks
@@ -141,7 +141,9 @@ public class TaskAllFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return rootView;
-    };
+    }
+
+    ;
 
     public static class AddNewTaskFragment extends DialogFragment {
 
@@ -177,7 +179,7 @@ public class TaskAllFragment extends Fragment {
                     Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
                     for (Map.Entry<String, Object> entry : data.entrySet()) {
                         Map singleUser = (Map) entry.getValue();
-                        users.add((String)singleUser.get("name"));
+                        users.add((String) singleUser.get("name"));
                         usersID.add(entry.getKey());
                     }
                 }
@@ -185,14 +187,16 @@ public class TaskAllFragment extends Fragment {
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
-                };
+                }
+
+                ;
             });
 
             //Set spinner and drop down list
             final String[] assignee = {""};
             final String[] assigneeId = {""};
             final Spinner spinner = (Spinner) viewInflated.findViewById(R.id.mySpinner);
-            final ArrayAdapter<CharSequence> adapter =  new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item,users);
+            final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, users);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
             spinner.setAdapter(adapter);
             //TODO: THIS FUNCTION IS NEVER CALLED ???!
@@ -224,9 +228,9 @@ public class TaskAllFragment extends Fragment {
                         @Override
                         public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                             if (hourOfDay < 13) {
-                                dueTime.setText(hourOfDay+":"+minute + " AM");
+                                dueTime.setText(hourOfDay + ":" + minute + " AM");
                             } else {
-                                dueTime.setText(hourOfDay - 12 +":"+minute + " PM");
+                                dueTime.setText(hourOfDay - 12 + ":" + minute + " PM");
                             }
                             Log.v(TAG, "Changed");
                         }
@@ -256,7 +260,7 @@ public class TaskAllFragment extends Fragment {
 
                         @Override
                         public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                            dueDate.setText((month+1) + "/" + dayOfMonth + "/" + year);
+                            dueDate.setText((month + 1) + "/" + dayOfMonth + "/" + year);
                             Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
 
                         }

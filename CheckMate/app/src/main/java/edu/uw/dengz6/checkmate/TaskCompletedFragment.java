@@ -51,7 +51,7 @@ public class TaskCompletedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView =  inflater.inflate(R.layout.fragment_completed, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_completed, container, false);
 
         // Initialize "Shopping History List"
         completedTasksList = new ArrayList<TaskCompletedData>();
@@ -134,7 +134,9 @@ public class TaskCompletedFragment extends Fragment {
         public TaskCompletedAdapter(ArrayList<TaskCompletedData> TaskCompletedList, Context context) {
             this.TaskCompletedList = TaskCompletedList;
             this.inflater = LayoutInflater.from(context);
-        };
+        }
+
+        ;
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -160,7 +162,7 @@ public class TaskCompletedFragment extends Fragment {
             viewHolder.txtTotalAssigned.setText("Total Assigned Tasks: " + totalAssigned);
             viewHolder.txtTotalCompleted.setText("Total Completed Tasks: " + totalCompleted);
             viewHolder.txtSince.setText(since);
-            viewHolder.txtTotalCompletedFocus.setText( "" + totalCompleted );
+            viewHolder.txtTotalCompletedFocus.setText("" + totalCompleted);
         }
 
         @Override
