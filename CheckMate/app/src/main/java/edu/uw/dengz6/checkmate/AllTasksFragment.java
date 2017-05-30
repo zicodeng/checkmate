@@ -276,16 +276,20 @@ public class AllTasksFragment extends Fragment {
                     mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assigner));
 
 
+                    //TODO: Fix listener bug
+//                    final DatabaseReference totalTasksref = FirebaseDatabase.getInstance()
+//                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+//                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + assigneeId[0] + "/totalTasks");
 
-                    final DatabaseReference totalTasksref = FirebaseDatabase.getInstance()
+                    final DatabaseReference totalTasksRef = FirebaseDatabase.getInstance()
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + assigneeId[0] + "/totalTasks");
+                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + userInfo.get(SessionManager.KEY_USER_ID) + "/totalTasks");
 
-                    totalTasksref.addValueEventListener(new ValueEventListener() {
+                    totalTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            totalTasksref.setValue((Integer)dataSnapshot.getValue() + 1) ;
+                            totalTasksRef.setValue(((Long) dataSnapshot.getValue()).intValue() + 1);
                         }
 
                         @Override
@@ -293,7 +297,6 @@ public class AllTasksFragment extends Fragment {
 
                         }
                     });
-
                 }
             });
 
