@@ -4,11 +4,12 @@
              android:layout_height="match_parent"
              tools:context="edu.uw.dengz6.checkmate.MyTasksFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="My Tasks Fragment"
-        android:gravity="center"
-        />
+     <ListView
+         android:id="@+id/all_tasks_list_view"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:padding="10dp"
+         android:paddingBottom="20dp"
+         android:paddingTop="10dp"></ListView>
 
 </FrameLayout>

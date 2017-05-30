@@ -13,11 +13,11 @@
         android:paddingRight="@dimen/spacing_medium"
         >
 
-        <EditText android:id="@+id/shopping_list_name"
+        <EditText android:id="@+id/shopping_list_total_cost"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:inputType="textCapWords"
-                  android:hint="Shopping List Name"
+                  android:inputType="number"
+                  android:hint="Total Cost"
             />
 
     </android.support.design.widget.TextInputLayout>

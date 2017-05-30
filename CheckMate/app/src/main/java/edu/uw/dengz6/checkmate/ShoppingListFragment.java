@@ -2,6 +2,7 @@ package edu.uw.dengz6.checkmate;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +26,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by iguest on 5/21/17.
@@ -39,11 +42,6 @@ public class ShoppingListFragment extends Fragment {
     private RecyclerView shoppingListRecyclerView;
 
     private String groupName;
-    private String databaseURL;
-
-    public ShoppingListFragment() {
-        // Required empty public constructor
-    }
 
     public static ShoppingListFragment newInstance() {
 
@@ -59,17 +57,20 @@ public class ShoppingListFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Get root view so we can use it to find its child views later
-        View rootView = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
 
         // Initialize ArrayList
         shoppingLists = new ArrayList<ShoppingListData>();
+
+        // Construct adapter
+        shoppingListAdapter = new ShoppingListAdapter(shoppingLists, getActivity());
 
         // Get reference to RecyclerView
         shoppingListRecyclerView = (RecyclerView) rootView.findViewById(R.id.shopping_list_recycler_view);
 
         // Attach RecyclerView with adapter
         shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+        shoppingListRecyclerView.setAdapter(shoppingListAdapter);
 
         // Get current group name
         final SessionManager sessionManager = new SessionManager(getActivity());
@@ -79,19 +80,28 @@ public class ShoppingListFragment extends Fragment {
         DatabaseReference ref = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
 
+        // Progress dialog
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         // Render shopping list on screen
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shoppingLists.clear();
+
                 for (DataSnapshot shoppingListSnapShot : dataSnapshot.getChildren()) {
                     ShoppingListData mShoppingListData = shoppingListSnapShot.getValue(ShoppingListData.class);
                     shoppingLists.add(mShoppingListData);
                 }
 
-                // Construct adapter
-                shoppingListAdapter = new ShoppingListAdapter(shoppingLists, getActivity());
-                shoppingListRecyclerView.setAdapter(shoppingListAdapter);
+                progressDialog.dismiss();
+
+                // Update adapter
+                shoppingListAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -165,7 +175,7 @@ public class ShoppingListFragment extends Fragment {
                     String shoppingListID = newShoppingList.getKey();
 
                     // Get current date
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
                     String currentDate = simpleDateFormat.format(new Date());
 
                     String ownerID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
@@ -177,7 +187,13 @@ public class ShoppingListFragment extends Fragment {
                     newShoppingList.setValue(mShoppingList);
 
                     // Inform the user
-                    Toast.makeText(getActivity(), "New list added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "New shopping list added", Toast.LENGTH_SHORT).show();
+
+                    // Send notification to group members
+                    // P1: group name
+                    // P2: message
+                    sendShoppingNotificationToGroup(groupName, ownerName + " just added a new shopping list called \"" +
+                            shoppingListName + "\".");
                 }
             });
 
@@ -190,5 +206,22 @@ public class ShoppingListFragment extends Fragment {
 
             return builder.create();
         }
+    }
+
+    public static void sendShoppingNotificationToGroup(String groupName, String message) {
+
+        // Create a shoppingNotification field
+        // Our Node.js server will take this field as entry to send notification to users belong to this group
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/notificationRequests");
+
+        Map notification = new HashMap<>();
+        notification.put("groupName", groupName);
+        notification.put("message", message);
+
+        // Tell server this is a shopping notification
+        notification.put("category", "Shopping");
+
+        ref.push().setValue(notification);
     }
 }

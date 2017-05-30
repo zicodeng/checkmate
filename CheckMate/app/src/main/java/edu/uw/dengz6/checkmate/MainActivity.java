@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Get current group name
+        final SessionManager sessionManager = new SessionManager(this);
+        String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+        //Firebase cloud message
+        FirebaseMessaging.getInstance().subscribeToTopic("group_" + groupName);
+
         super.onCreate(savedInstanceState);
         session = new SessionManager(getApplicationContext());
 
@@ -89,12 +99,29 @@ public class MainActivity extends AppCompatActivity {
         // Initialize FragmentManager
         fm = getSupportFragmentManager();
 
-        // Set "Tasks Fragment" as default
-        TasksFragment tasksFragment = TasksFragment.newInstance();
-        ft = fm.beginTransaction();
-        ft.replace(R.id.container, tasksFragment, "Tasks_Fragment");
-        ft.commit();
-        navigation.getMenu().getItem(1).setChecked(true);
+        // Retrieve data from intent sent by notification
+        String menuFragment = getIntent().getStringExtra(MyFirebaseMessagingService.MENU_FRAGMENT_KEY);
+
+        // If menuFragment is defined, then this activity should be launched with a selected fragment
+        if(menuFragment != null) {
+
+            if(menuFragment.equalsIgnoreCase("shopping")) {
+                ShoppingFragment shoppingFragment = ShoppingFragment.newInstance();
+                ft = fm.beginTransaction();
+                ft.replace(R.id.container, shoppingFragment, "Shopping_Fragment");
+                ft.commit();
+                navigation.getMenu().getItem(0).setChecked(true);
+            }
+
+        } else {
+
+            // If not, set "Tasks Fragment" as default
+            TasksFragment tasksFragment = TasksFragment.newInstance();
+            ft = fm.beginTransaction();
+            ft.replace(R.id.container, tasksFragment, "Tasks_Fragment");
+            ft.commit();
+            navigation.getMenu().getItem(1).setChecked(true);
+        }
     }
 
     @Override
