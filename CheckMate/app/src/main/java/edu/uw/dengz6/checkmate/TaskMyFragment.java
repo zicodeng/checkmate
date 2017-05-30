@@ -26,7 +26,7 @@ import java.util.HashMap;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyTasksFragment extends Fragment {
+public class TaskMyFragment extends Fragment {
 
     public static final String TAG = "All_Tasks_Fragment";
     protected static SessionManager manager;
@@ -34,13 +34,13 @@ public class MyTasksFragment extends Fragment {
     protected static ArrayList<TaskData> tasks;
     private TaskAdapter adapter;
 
-    public MyTasksFragment() {
+    public TaskMyFragment() {
         // Required empty public constructor
     }
 
-    public static MyTasksFragment newInstance() {
+    public static TaskMyFragment newInstance() {
         Bundle args = new Bundle();
-        MyTasksFragment fragment = new MyTasksFragment();
+        TaskMyFragment fragment = new TaskMyFragment();
         tasks = new ArrayList<>();
         fragment.setArguments(args);
         return fragment;
@@ -69,7 +69,7 @@ public class MyTasksFragment extends Fragment {
                 Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
 
                 // Create a dialog and ask the user for input
-                DialogFragment AddNewTaskFragment = AllTasksFragment.AddNewTaskFragment.newInstance();
+                DialogFragment AddNewTaskFragment = TaskAllFragment.AddNewTaskFragment.newInstance();
                 AddNewTaskFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Task");
             }
         });

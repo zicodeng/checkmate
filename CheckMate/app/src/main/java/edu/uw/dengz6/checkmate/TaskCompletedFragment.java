@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class CompletedFragment extends Fragment {
+public class TaskCompletedFragment extends Fragment {
 
     public static final String TAG = "Tasks_Completed";
 
@@ -33,15 +33,15 @@ public class CompletedFragment extends Fragment {
 
     private String groupName;
 
-    public CompletedFragment() {
+    public TaskCompletedFragment() {
         // Required empty public constructor
     }
 
-    public static CompletedFragment newInstance() {
+    public static TaskCompletedFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        CompletedFragment fragment = new CompletedFragment();
+        TaskCompletedFragment fragment = new TaskCompletedFragment();
         fragment.setArguments(args);
         return fragment;
     }

@@ -1,5 +1,9 @@
 package edu.uw.dengz6.checkmate;
 
+/**
+ * Created by Leon on 5/30/17.
+ */
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -41,7 +45,7 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AllTasksFragment extends Fragment {
+public class TaskAllFragment extends Fragment {
 
     public static final String TAG = "All_Tasks_Fragment";
     protected static SessionManager manager;
@@ -49,13 +53,13 @@ public class AllTasksFragment extends Fragment {
     protected static ArrayList<TaskData> tasks;
     private TaskAdapter adapter;
 
-    public AllTasksFragment() {
+    public TaskAllFragment() {
         // Required empty public constructor
     }
 
-    public static AllTasksFragment newInstance() {
+    public static TaskAllFragment newInstance() {
         Bundle args = new Bundle();
-        AllTasksFragment fragment = new AllTasksFragment();
+        TaskAllFragment fragment = new TaskAllFragment();
         tasks = new ArrayList<>();
         fragment.setArguments(args);
         return fragment;
@@ -84,7 +88,7 @@ public class AllTasksFragment extends Fragment {
                 Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
 
                 // Create a dialog and ask the user for input
-                DialogFragment AddNewTaskFragment = AllTasksFragment.AddNewTaskFragment.newInstance();
+                DialogFragment AddNewTaskFragment = TaskAllFragment.AddNewTaskFragment.newInstance();
                 AddNewTaskFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Task");
             }
         });
@@ -168,21 +172,21 @@ public class AllTasksFragment extends Fragment {
             final List<CharSequence> users = new ArrayList<>();
             final List<String> usersID = new ArrayList<>();
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
-               @Override
-               public void onDataChange(DataSnapshot dataSnapshot) {
-                   Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
-                   for (Map.Entry<String, Object> entry : data.entrySet()) {
-                       Map singleUser = (Map) entry.getValue();
-                       users.add((String)singleUser.get("name"));
-                       usersID.add(entry.getKey());
-                   }
-               }
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    for (Map.Entry<String, Object> entry : data.entrySet()) {
+                        Map singleUser = (Map) entry.getValue();
+                        users.add((String)singleUser.get("name"));
+                        usersID.add(entry.getKey());
+                    }
+                }
 
-               @Override
-               public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-               };
-           });
+                };
+            });
 
             //Set spinner and drop down list
             final String[] assignee = {""};
@@ -288,7 +292,7 @@ public class AllTasksFragment extends Fragment {
                     SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
                     String createdOn = dt.format(new Date());
                     String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
-                    String assigner = AllTasksFragment.userInfo.get(SessionManager.KEY_NAME);
+                    String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
                     mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assigner, false, taskID));
 
 
@@ -327,5 +331,4 @@ public class AllTasksFragment extends Fragment {
             return builder.create();
         }
     }
-
 }
