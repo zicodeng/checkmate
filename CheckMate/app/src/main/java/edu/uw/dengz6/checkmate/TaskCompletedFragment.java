@@ -1,5 +1,6 @@
 package edu.uw.dengz6.checkmate;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,6 +57,13 @@ public class TaskCompletedFragment extends Fragment {
         // Initialize "Shopping History List"
         completedTasksList = new ArrayList<TaskCompletedData>();
 
+        // Progress dialog
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         // Construct adapter
         adapter = new TaskCompletedAdapter(completedTasksList, getActivity());
 
@@ -95,6 +103,7 @@ public class TaskCompletedFragment extends Fragment {
                     completedTasksList.add(mTaskCompletedData);
                     adapter.notifyDataSetChanged();
                 }
+                progressDialog.dismiss();
             }
 
             @Override

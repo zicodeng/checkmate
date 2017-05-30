@@ -1,11 +1,17 @@
 package edu.uw.dengz6.checkmate;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,6 +41,8 @@ public class TaskMyFragment extends Fragment {
     protected static HashMap<String, String> userInfo;
     protected static ArrayList<TaskData> tasks;
     private TaskAdapter adapter;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     public TaskMyFragment() {
         // Required empty public constructor
@@ -74,6 +84,13 @@ public class TaskMyFragment extends Fragment {
             }
         });
 
+        // Progress dialog
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         adapter = new TaskAdapter(getActivity(), tasks);
         // Attach the adapter to a ListView
         ListView listView = (ListView) rootView.findViewById(R.id.all_tasks_list_view);
@@ -108,9 +125,33 @@ public class TaskMyFragment extends Fragment {
                         TaskData task = taskSnapshot.getValue(TaskData.class);
                         // show incomplete tasks, the current user as the assignee
                         if (task.assignee.equals(userInfo.get(SessionManager.KEY_NAME)) && !task.isCompleted) {
+                            //converting the due date to long and set the alarm 10 minutes before due time
+                            SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                            long timeDue = 0;
+                            try {
+                                timeDue = dt.parse(task.dueOn).getTime();
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            long currentTime = System.currentTimeMillis();
+                            if((currentTime - timeDue) >= 1000 * 60 * 10){
+                                timeDue = timeDue - 1000 * 60 * 10;
+                            }
+                            if(currentTime > timeDue){
+                                Log.v(TAG, "passed due time");
+                            }else {
+                                alarmMgr = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
+                                Intent intent = new Intent(getContext(), MainActivity.class);
+                                alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
+
+                                // setRepeating() lets you specify a precise custom interval--in this case,
+                                // 5 minutes.
+                                alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+                            }
                             tasks.add(task);
                         }
                     }
+                    progressDialog.dismiss();
                 }
             }
 
@@ -119,8 +160,6 @@ public class TaskMyFragment extends Fragment {
 
             }
         });
-
-        // Inflate the layout for this fragment
         return rootView;
     }
 
