@@ -3,17 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_add_member"
-        android:orderInCategory="100"
-        android:title="Add new members"
+        android:title="Add New Members"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
         android:id="@+id/logout"
-        android:orderInCategory="100"
-        android:title="Logout"
+        android:title="Log Out"
         app:showAsAction="never" />
 </menu>
