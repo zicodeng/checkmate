@@ -17,6 +17,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by iguest on 5/21/17.
@@ -113,6 +115,17 @@ public class ShoppingHistoryFragment extends Fragment {
                                     new ShoppingHistoryData(userName, totalSpend, totalShoppingLists, createdOn);
 
                             shoppingHistoryList.add(mShoppingHistoryData);
+                            // Sort the list based on the total spent and total shopping lists
+                            Collections.sort(shoppingHistoryList, new Comparator<ShoppingHistoryData>() {
+                                @Override
+                                public int compare(ShoppingHistoryData user1, ShoppingHistoryData user2)
+                                {
+                                    if (user2.totalSpend == user1.totalSpend) {
+                                        return user2.totalShoppingLists - user1.totalShoppingLists;
+                                    }
+                                    return  user2.totalSpend - user1.totalSpend;
+                                }
+                            });
 
                             shoppingHistoryAdapter.notifyDataSetChanged();
                         }
