@@ -32,12 +32,11 @@
         >
 
         <EditText
-            android:id="@+id/textDescription"
+            android:id="@+id/text_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:inputType="textCapSentences"
-            android:hint="Description" />
+            android:hint="Content" />
 
     </android.support.design.widget.TextInputLayout>
 

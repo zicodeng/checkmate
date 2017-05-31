@@ -171,6 +171,7 @@ public class TaskAllFragment extends Fragment {
             final EditText taskDetail = (EditText) viewInflated.findViewById(R.id.task_detail);
             final EditText assigneeInput = (EditText)viewInflated.findViewById(R.id.task_assignee);
             final PopupMenu menu = new PopupMenu(getContext(), viewInflated);
+
             DatabaseReference ref = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
                             userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users");
@@ -273,6 +274,7 @@ public class TaskAllFragment extends Fragment {
                      }
                  }
              });
+
             dueTime.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -343,7 +345,8 @@ public class TaskAllFragment extends Fragment {
                     DatePicker datePicker = (DatePicker) datePickerDialog.findViewById(R.id.datePicker1);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(System.currentTimeMillis());
-                    datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+                    datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+                            new DatePicker.OnDateChangedListener() {
 
                         @Override
                         public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
@@ -370,38 +373,53 @@ public class TaskAllFragment extends Fragment {
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    DatabaseReference ref = FirebaseDatabase.getInstance()
-                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
 
-                    DatabaseReference mTask = ref.push();
-                    dialog.dismiss();
-                    String taskID = mTask.getKey();
                     String title = taskTitle.getText().toString();
                     String detail = taskDetail.getText().toString();
-                    SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
-                    String createdOn = dt.format(new Date());
-                    String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
-                    String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
-                    mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], false, taskID));
+                    // Validate input
+                    // Make sure all the fields are filled
+                    if (title.length() != 0 && detail.length() != 0) {
 
-                    final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
-                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + assigneeId[0] + "/tasksAssigned");
+                        DatabaseReference ref = FirebaseDatabase.getInstance()
+                                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                                        userInfo.get(SessionManager.KEY_GROUP_NAME) + "/tasks");
 
-                    tasksAssignedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        DatabaseReference mTask = ref.push();
 
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            tasksAssignedRef.setValue(((Long) dataSnapshot.getValue()).intValue() + 1);
-                        }
+                        String taskID = mTask.getKey();
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                        SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                        String createdOn = dt.format(new Date());
+                        String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
+                        String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
+                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], false, taskID));
 
-                        }
-                    });
-                    Toast.makeText(getActivity(), "Task Added", Toast.LENGTH_SHORT).show();
+
+                        final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
+                                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
+                                        userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" +
+                                        assigneeId[0] + "/tasksAssigned");
+
+                        tasksAssignedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                tasksAssignedRef.setValue(((Long) dataSnapshot.getValue()).intValue() + 1);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        Toast.makeText(getActivity(), "New task added", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                    }
+
+                    dialog.dismiss();
                 }
             });
 

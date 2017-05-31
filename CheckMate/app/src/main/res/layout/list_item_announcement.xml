@@ -13,21 +13,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary"
-        android:textSize="18dp"
+        android:textSize="@dimen/title_text_size"
         android:text="Announcement Title"
+        android:textStyle="bold"
         />
 
     <TextView
         android:id="@+id/announcement_item_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:textColor="#888"
         android:layout_below="@id/announcement_item_content"
+        android:layout_marginTop="@dimen/spacing_small"
         android:text="Description"
-        android:textSize="16dp" />
-
-
+        />
 
     <TextView
         android:id="@+id/announcement_created_on"
@@ -41,9 +39,9 @@
         android:id="@+id/announcement_created_by"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/spacing_small"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/announcement_created_on"
-        android:text="Owner"
+        android:layout_below="@+id/announcement_item_description"
+        android:text="Sender"
         />
 </RelativeLayout>
