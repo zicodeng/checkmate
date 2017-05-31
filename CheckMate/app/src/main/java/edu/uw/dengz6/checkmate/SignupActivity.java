@@ -219,10 +219,19 @@ public class SignupActivity extends AppCompatActivity {
         setResult(RESULT_OK, null);
         sessionManager.createLoginSession(userName, email, userID, groupName);
 
-        // Start "AddMembersActivity"
-        Intent intent = new Intent(getApplicationContext(), AddMembersActivity.class);
-        intent.putExtra("group_id", groupName);
-        startActivityForResult(intent, 0);
+        if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getQueryParameter("group_name") != null) {
+
+            // Start "MainActivity Activity" directly if this sign-up is from email invitation
+            Intent mainActivityIntent = new Intent(SignupActivity.this, MainActivity.class);
+            startActivity(mainActivityIntent);
+
+        } else {
+
+            // Start "AddMembersActivity"
+            Intent intent = new Intent(getApplicationContext(), AddMembersActivity.class);
+            intent.putExtra("group_id", groupName);
+            startActivityForResult(intent, 0);
+        }
     }
 
     public void onSignupFailed() {

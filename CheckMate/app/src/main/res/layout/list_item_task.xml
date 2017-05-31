@@ -23,14 +23,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="05/20/2017 3:00 PM"
-        android:layout_alignParentEnd="true"
+        android:layout_below="@id/task_item_title"
+        android:layout_marginBottom="@dimen/spacing_small"
         />
 
     <TextView
         android:id="@+id/task_item_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/task_item_title"
+        android:layout_below="@id/task_item_dueOn"
         android:layout_marginBottom="@dimen/spacing_small"
         android:text="Make sure no dirt on the floor. Return the bloom after you are done."
         />
