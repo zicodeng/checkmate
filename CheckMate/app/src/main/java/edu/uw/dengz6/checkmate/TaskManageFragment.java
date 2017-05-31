@@ -101,7 +101,6 @@ public class TaskManageFragment extends DialogFragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         TaskData taskData = dataSnapshot.getValue(TaskData.class);
                         // un-assign the task from the user data
-                        Log.v("!!!!!", taskData.assigneeID);
                         final DatabaseReference totalTasksAssignedRef = ref.child("users").child(taskData.assigneeID).child("tasksAssigned");
                         totalTasksAssignedRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
