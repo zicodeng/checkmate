@@ -106,11 +106,20 @@ public class MainActivity extends AppCompatActivity {
         if(menuFragment != null) {
 
             if(menuFragment.equalsIgnoreCase("shopping")) {
+
                 ShoppingFragment shoppingFragment = ShoppingFragment.newInstance();
                 ft = fm.beginTransaction();
                 ft.replace(R.id.container, shoppingFragment, "Shopping_Fragment");
                 ft.commit();
                 navigation.getMenu().getItem(0).setChecked(true);
+
+            } else if(menuFragment.equalsIgnoreCase("announcement")) {
+
+                AnnouncementFragment announcementFragment = AnnouncementFragment.newInstance();
+                ft = fm.beginTransaction();
+                ft.replace(R.id.container, announcementFragment, "Announcement_Fragment");
+                ft.commit();
+                navigation.getMenu().getItem(2).setChecked(true);
             }
 
         } else {

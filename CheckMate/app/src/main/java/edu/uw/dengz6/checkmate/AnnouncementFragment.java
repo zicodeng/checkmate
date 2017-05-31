@@ -2,6 +2,7 @@ package edu.uw.dengz6.checkmate;
 
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -68,7 +69,8 @@ public class AnnouncementFragment extends Fragment {
         announcementRecyclerView = (RecyclerView) rootView.findViewById(R.id.announcementRecyclerView);
 
         announcementRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+        announcementRecyclerView.setAdapter(adapter);
+        
         final SessionManager manager = new SessionManager(getActivity());
 
         groupName = manager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
@@ -76,6 +78,13 @@ public class AnnouncementFragment extends Fragment {
         DatabaseReference ref = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
                         groupName + "/announcements");
+
+        // Progress dialog
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -86,8 +95,10 @@ public class AnnouncementFragment extends Fragment {
                     AnnouncementData announcement = announcementSnapshot.getValue(AnnouncementData.class);
                     announcements.add(announcement);
                 }
+
+                progressDialog.dismiss();
+
                 adapter = new AnnouncementAdapter(getActivity(), announcements);
-                announcementRecyclerView.setAdapter(adapter);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -132,7 +143,7 @@ public class AnnouncementFragment extends Fragment {
 
             // Set up the input
             final EditText title = (EditText) viewInflated.findViewById(R.id.textTitle);
-            final EditText description = (EditText) viewInflated.findViewById(R.id.textDescription);
+            final EditText textContent = (EditText) viewInflated.findViewById(R.id.text_content);
             final String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
@@ -145,22 +156,24 @@ public class AnnouncementFragment extends Fragment {
 
                     DatabaseReference ref = FirebaseDatabase.getInstance()
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                                    sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME) + "/announcements");
+                                    groupName + "/announcements");
 
                     DatabaseReference mAnnouncement = ref.push();
 
                     dialog.dismiss();
+
                     String getTitle = title.getText().toString();
-                    String getDescription = description.getText().toString();
+                    String content = textContent.getText().toString();
+
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
                     String currentTime = simpleDateFormat.format(new Date());
                     String assigner = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
                     String announcementID = mAnnouncement.getKey();
-                    mAnnouncement.setValue(new AnnouncementData(announcementID ,getTitle ,getDescription, currentTime, assigner));
+                    mAnnouncement.setValue(new AnnouncementData(announcementID, getTitle, content, currentTime, assigner));
 
                     Toast.makeText(getActivity(), "New Announcement added", Toast.LENGTH_SHORT).show();
 
-                    sendAnnouncementNotificationToGroup(groupName, assigner + " just added a new announcement.");
+                    sendAnnouncementNotificationToGroup(groupName, content);
                 }
             });
 
@@ -186,7 +199,7 @@ public class AnnouncementFragment extends Fragment {
         notification.put("groupName", groupName);
         notification.put("message", message);
 
-        // Tell server this is a shopping notification
+        // Tell server this is a announcement notification
         notification.put("category", "Announcement");
 
         ref.push().setValue(notification);

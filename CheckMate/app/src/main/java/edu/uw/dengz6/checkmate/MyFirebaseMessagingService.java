@@ -16,11 +16,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     // Notification ID
     private static final int SHOPPING_NOTIFICATION_ID = 1;
+    private static final int ANNOUNCEMENT_NOTIFICATION_ID = 2;
 
     // Pending intent ID
     private static final int SHOPPING_PENDING_INTENT_ID = 1;
-
-    private static final int ANNOUNCEMENT_NOTIFICATION_ID = 1;
+    private static final int ANNOUNCEMENT_PENDING_INTENT_ID = 2;
 
     public MyFirebaseMessagingService() {
 
@@ -75,6 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             } else if (notificationTitle.equalsIgnoreCase("announcement")) {
                 // Handle "Announcement Notification"
+
                 // Create a "Announcement Intent"
                 Intent AnnouncementIntent = new Intent(getApplicationContext(), MainActivity.class);
 
@@ -84,7 +85,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Create a "Shopping Pending Intent"
                 PendingIntent announcementPendingIntent = PendingIntent.getActivity(
                         this,
-                        SHOPPING_PENDING_INTENT_ID,
+                        ANNOUNCEMENT_PENDING_INTENT_ID,
                         AnnouncementIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
