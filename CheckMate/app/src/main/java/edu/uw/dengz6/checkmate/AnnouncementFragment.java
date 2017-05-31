@@ -175,7 +175,7 @@ public class AnnouncementFragment extends Fragment {
 
                     Toast.makeText(getActivity(), "New Announcement added", Toast.LENGTH_SHORT).show();
 
-                    sendAnnouncementNotificationToGroup(groupName, content);
+                    sendAnnouncementNotificationToGroup(groupName, getTitle);
                 }
             });
 

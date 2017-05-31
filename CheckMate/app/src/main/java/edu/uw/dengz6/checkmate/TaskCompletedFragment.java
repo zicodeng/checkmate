@@ -18,6 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 
@@ -101,6 +103,18 @@ public class TaskCompletedFragment extends Fragment {
                     TaskCompletedData mTaskCompletedData =
                             new TaskCompletedData(userName, tasksCompleted, tasksAssigned, createdOn);
                     completedTasksList.add(mTaskCompletedData);
+
+                    // Sort the list based on the total completed tasks
+                    Collections.sort(completedTasksList, new Comparator<TaskCompletedData>() {
+                        @Override
+                        public int compare(TaskCompletedData user1, TaskCompletedData user2)
+                        {
+                            if (user2.totalCompletedTasks == user1.totalCompletedTasks) {
+                                return user2.totalAssignedTasks - user1.totalAssignedTasks;
+                            }
+                            return  user2.totalCompletedTasks - user1.totalCompletedTasks;
+                        }
+                    });
                     adapter.notifyDataSetChanged();
                 }
                 progressDialog.dismiss();
@@ -120,6 +134,8 @@ public class TaskCompletedFragment extends Fragment {
 
         private LayoutInflater inflater;
         private ArrayList<TaskCompletedData> TaskCompletedList;
+
+
 
         class ViewHolder extends RecyclerView.ViewHolder {
             private TextView txtUserName;
