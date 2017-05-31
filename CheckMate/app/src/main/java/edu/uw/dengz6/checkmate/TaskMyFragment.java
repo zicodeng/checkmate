@@ -34,7 +34,7 @@ import java.util.HashMap;
  */
 public class TaskMyFragment extends Fragment {
 
-    public static final String TAG = "All_Tasks_Fragment";
+    public static final String TAG = "My_Tasks_Fragment";
     protected static SessionManager manager;
     protected static HashMap<String, String> userInfo;
     protected static ArrayList<TaskData> tasks;
@@ -60,7 +60,7 @@ public class TaskMyFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Get root view so we can use it to find its child views later
-        View rootView = inflater.inflate(R.layout.fragment_all_tasks, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_my_tasks, container, false);
 
         adapter = new TaskAdapter(getActivity(), tasks);
         // Attach the adapter to a ListView

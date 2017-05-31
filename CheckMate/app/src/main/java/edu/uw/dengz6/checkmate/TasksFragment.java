@@ -27,7 +27,7 @@ public class TasksFragment extends Fragment {
     // Fragments
 
     // Top navigation tab title
-    private String[] tabs = {"All Tasks", "My Tasks", "Completed"};
+    private String[] tabs = {"All Tasks", "My Tasks", "History"};
 
     public TasksFragment() {
         // Required empty public constructor
