@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +56,7 @@ public class TaskMyFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Get root view so we can use it to find its child views later
@@ -116,22 +115,19 @@ public class TaskMyFragment extends Fragment {
                             if((currentTime - timeDue) >= 1000 * 60 * 10){
                                 timeDue = timeDue - 1000 * 60 * 10;
                             }
-                            if(currentTime > timeDue){
-                                Log.v(TAG, "passed due time");
-                            }else {
+                            alarmMgr = (AlarmManager)getContext().getSystemService(Activity.ALARM_SERVICE);
+                            Intent intent = new Intent(getContext(), ReminderBroadcastReceiver.class);
+                            intent.putExtra("task_name", task.title);
+                            intent.putExtra("task_due", task.dueOn);
+                            intent.putExtra("task_assigner", task.assigner);
+                            alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                                alarmMgr = (AlarmManager)getContext().getSystemService(Activity.ALARM_SERVICE);
-                                Intent intent = new Intent(getContext(), ReminderBroadcastReceiver.class);
-                                alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                // setRepeating() lets you specify a precise custom interval--in this case,
-                                // 5 minutes.
-                                if (Build.VERSION.SDK_INT < 19) {
-                                    alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
-                                } else {
-                                    alarmMgr.setExact(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
-                                }
-
+                            // setRepeating() lets you specify a precise custom interval--in this case,
+                            // 5 minutes.
+                            if (Build.VERSION.SDK_INT < 19) {
+                                alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+                            } else {
+                                alarmMgr.setExact(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
                             }
                             tasks.add(task);
                         }
