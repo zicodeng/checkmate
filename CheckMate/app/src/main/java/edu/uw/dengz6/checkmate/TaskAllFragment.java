@@ -133,11 +133,9 @@ public class TaskAllFragment extends Fragment {
                             tasks.add(task);
                         }
                     }
-
-                    progressDialog.dismiss();
-
                     adapter.notifyDataSetChanged();
                 }
+                progressDialog.dismiss();
             }
 
             @Override
@@ -257,19 +255,26 @@ public class TaskAllFragment extends Fragment {
                          picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                              @Override
                              public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                                 String minuteString = "0";
+                                 String minuteStr;
                                  if (minute < 10) {
-                                     minuteString+= minute;
+                                     minuteStr = "0" + minute;
+                                 } else {
+                                     minuteStr = "" + minute;
                                  }
                                  if (hourOfDay < 13) {
-                                     dueTime.setText(hourOfDay + ":" + minuteString+ " AM");
+                                     dueTime.setText(hourOfDay + ":" + minuteStr + " AM");
                                  } else {
-                                     dueTime.setText(hourOfDay - 12 + ":" + minuteString + " PM");
+                                     dueTime.setText(hourOfDay - 12 + ":" + minuteStr + " PM");
                                  }
                                  Log.v(TAG, "Changed");
                              }
                          });
                          timePickerDialog.show();
+
+                         // set default due time to be now
+                         SimpleDateFormat dt = new SimpleDateFormat("hh:mm aaa");
+                         dueTime.setText(dt.format(new Date()));
+
                          Button button = (Button) timePickerDialog.findViewById(R.id.button2);
                          button.setOnClickListener(new View.OnClickListener() {
                              @Override
@@ -306,6 +311,11 @@ public class TaskAllFragment extends Fragment {
                         }
                     });
                     timePickerDialog.show();
+
+                    // set default due time to be now
+                    SimpleDateFormat dt = new SimpleDateFormat("hh:mm aaa");
+                    dueTime.setText(dt.format(new Date()));
+
                     Button button = (Button) timePickerDialog.findViewById(R.id.button2);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -338,6 +348,8 @@ public class TaskAllFragment extends Fragment {
                          });
 
                          datePickerDialog.show();
+                         //set the default due date
+                         dueDate.setText((calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR));
                          Button button = (Button) datePickerDialog.findViewById(R.id.button3);
                          button.setOnClickListener(new View.OnClickListener() {
                              @Override
@@ -369,6 +381,8 @@ public class TaskAllFragment extends Fragment {
                         }
                     });
                     datePickerDialog.show();
+                    //set the default due date
+                    dueDate.setText((calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR));
                     Button button = (Button) datePickerDialog.findViewById(R.id.button3);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override

@@ -1,4 +1,4 @@
-# checkmate
+# CheckMate
 
 ## Project Overview
 * Who is the client or target audience of the app, and who will be using it?

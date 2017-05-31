@@ -132,8 +132,8 @@ public class TaskMyFragment extends Fragment {
                             tasks.add(task);
                         }
                     }
-                    progressDialog.dismiss();
                 }
+                progressDialog.dismiss();
             }
 
             @Override
