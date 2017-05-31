@@ -112,22 +112,19 @@ public class TaskMyFragment extends Fragment {
                                 e.printStackTrace();
                             }
                             long currentTime = System.currentTimeMillis();
-                            if((currentTime - timeDue) >= 1000 * 60 * 10){
+                            //task is due in more than 1 day, remind user in 1 day
+                            if((timeDue - currentTime) >= 86400000) {
+                                timeDue = timeDue - 86400000;
+                                setAlarms(task, timeDue);
+                                //task is due within the day, remind the user 10 minutes before
+                            }else if((timeDue - currentTime) >= 1000 * 60 * 10){
                                 timeDue = timeDue - 1000 * 60 * 10;
-                            }
-                            alarmMgr = (AlarmManager)getContext().getSystemService(Activity.ALARM_SERVICE);
-                            Intent intent = new Intent(getContext(), ReminderBroadcastReceiver.class);
-                            intent.putExtra("task_name", task.title);
-                            intent.putExtra("task_due", task.dueOn);
-                            intent.putExtra("task_assigner", task.assigner);
-                            alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                setAlarms(task, timeDue);
+                            }else if((timeDue - currentTime) >= 0){
+                                setAlarms(task, timeDue);
+                            }else {
+                                //overdue here, what to do ?
 
-                            // setRepeating() lets you specify a precise custom interval--in this case,
-                            // 5 minutes.
-                            if (Build.VERSION.SDK_INT < 19) {
-                                alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
-                            } else {
-                                alarmMgr.setExact(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
                             }
                             tasks.add(task);
                         }
@@ -144,5 +141,17 @@ public class TaskMyFragment extends Fragment {
         return rootView;
     }
 
-    ;
+    public void setAlarms(TaskData task, long timeDue){
+        alarmMgr = (AlarmManager)getContext().getSystemService(Activity.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), ReminderBroadcastReceiver.class);
+        intent.putExtra("task_name", task.title);
+        intent.putExtra("task_due", task.dueOn);
+        intent.putExtra("task_assigner", task.assigner);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT < 19) {
+            alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+        } else {
+            alarmMgr.setExact(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+        }
+    }
 }
