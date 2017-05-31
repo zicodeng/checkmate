@@ -87,9 +87,11 @@ public class TaskAllFragment extends Fragment {
         });
 
         adapter = new TaskAdapter(getActivity(), tasks);
+
         // Attach the adapter to a ListView
         ListView listView = (ListView) rootView.findViewById(R.id.all_tasks_list_view);
         listView.setAdapter(adapter);
+
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -120,8 +122,9 @@ public class TaskAllFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
-                    adapter.clear();
+
                     tasks.clear();
+
                     for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
                         //handle each task
                         TaskData task = taskSnapshot.getValue(TaskData.class);
@@ -130,7 +133,10 @@ public class TaskAllFragment extends Fragment {
                             tasks.add(task);
                         }
                     }
+
                     progressDialog.dismiss();
+
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -285,10 +291,16 @@ public class TaskAllFragment extends Fragment {
                     picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                         @Override
                         public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                            if (hourOfDay < 13) {
-                                dueTime.setText(hourOfDay + ":" + minute + " AM");
+                            String minuteStr;
+                            if (minute < 10) {
+                                minuteStr = "0" + minute;
                             } else {
-                                dueTime.setText(hourOfDay - 12 + ":" + minute + " PM");
+                                minuteStr = "" + minute;
+                            }
+                            if (hourOfDay < 13) {
+                                dueTime.setText(hourOfDay + ":" + minuteStr + " AM");
+                            } else {
+                                dueTime.setText(hourOfDay - 12 + ":" + minuteStr + " PM");
                             }
                             Log.v(TAG, "Changed");
                         }
@@ -324,6 +336,7 @@ public class TaskAllFragment extends Fragment {
 
                              }
                          });
+
                          datePickerDialog.show();
                          Button button = (Button) datePickerDialog.findViewById(R.id.button3);
                          button.setOnClickListener(new View.OnClickListener() {
@@ -392,8 +405,7 @@ public class TaskAllFragment extends Fragment {
                         String createdOn = dt.format(new Date());
                         String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
                         String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
-                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], false, taskID));
-
+                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], assigneeId[0], false, taskID));
 
                         final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
                                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
@@ -413,7 +425,15 @@ public class TaskAllFragment extends Fragment {
                             }
                         });
 
-                        Toast.makeText(getActivity(), "New task added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "New Task Added", Toast.LENGTH_SHORT).show();
+
+                        String groupName = manager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+                        // Send notification to group members
+                        // P1: group name
+                        // P2: message
+                        sendTasksNotificationToGroup(groupName, assigner + " assigned a task to " +
+                                 assignee + ".");
 
                     } else {
                         Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
@@ -432,5 +452,22 @@ public class TaskAllFragment extends Fragment {
 
             return builder.create();
         }
+    }
+
+    public static void sendTasksNotificationToGroup(String groupName, String message) {
+
+        // Create a shoppingNotification field
+        // Our Node.js server will take this field as entry to send notification to users belong to this group
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/notificationRequests");
+
+        Map notification = new HashMap<>();
+        notification.put("groupName", groupName);
+        notification.put("message", message);
+
+        // Tell server this is a shopping notification
+        notification.put("category", "Tasks");
+
+        ref.push().setValue(notification);
     }
 }

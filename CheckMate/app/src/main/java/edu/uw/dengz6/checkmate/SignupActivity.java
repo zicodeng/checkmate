@@ -99,8 +99,13 @@ public class SignupActivity extends AppCompatActivity {
                     new android.os.Handler().postDelayed(
                             new Runnable() {
                                 public void run() {
-                                    Toast.makeText(SignupActivity.this, "Group name has already been picked, signing you up with existing group", Toast.LENGTH_SHORT).show();
+
+                                    // If the group already exists, prompt the user to pick a different group name
+                                    Toast.makeText(SignupActivity.this, "Group name already exists",
+                                            Toast.LENGTH_SHORT).show();
+
                                     final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
+
                                     usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {

@@ -17,10 +17,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // Notification ID
     private static final int SHOPPING_NOTIFICATION_ID = 1;
     private static final int ANNOUNCEMENT_NOTIFICATION_ID = 2;
+    private static final int TASKS_NOTIFICATION_ID = 2;
 
     // Pending intent ID
     private static final int SHOPPING_PENDING_INTENT_ID = 1;
     private static final int ANNOUNCEMENT_PENDING_INTENT_ID = 2;
+    private static final int TASKS_PENDING_INTENT_ID = 2;
 
     public MyFirebaseMessagingService() {
 
@@ -71,6 +73,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 // Handle "Tasks Notification"
 
+                // Create a "Tasks Intent"
+                Intent tasksIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+                // Create a "Tasks Pending Intent"
+                PendingIntent tasksPendingIntent = PendingIntent.getActivity(
+                        this,
+                        TASKS_PENDING_INTENT_ID,
+                        tasksIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+                // Build a shopping notification
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_checkmate_logo)
+                        .setAutoCancel(true)
+                        .setContentTitle(notificationTitle)
+                        .setContentText(notificationBody)
+                        .setContentIntent(tasksPendingIntent);
+
+                NotificationManager mNotifyMgr =
+                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+                // Builds the notification and issues it.
+                mNotifyMgr.notify(TASKS_NOTIFICATION_ID, mBuilder.build());
 
 
             } else if (notificationTitle.equalsIgnoreCase("announcement")) {

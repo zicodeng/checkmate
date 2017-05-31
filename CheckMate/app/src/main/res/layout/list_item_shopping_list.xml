@@ -12,7 +12,7 @@
         android:id="@+id/shopping_list_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_size_large"
+        android:textSize="@dimen/title_text_size"
         android:textColor="@color/colorPrimary"
         android:text="Shopping List Name"
         />
