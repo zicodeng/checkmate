@@ -419,7 +419,7 @@ public class TaskAllFragment extends Fragment {
                             }
                         });
 
-                        Toast.makeText(getActivity(), "New task added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "New Task Added", Toast.LENGTH_SHORT).show();
 
                     } else {
                         Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
