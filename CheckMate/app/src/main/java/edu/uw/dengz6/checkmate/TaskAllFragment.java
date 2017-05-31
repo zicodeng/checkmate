@@ -250,10 +250,14 @@ public class TaskAllFragment extends Fragment {
                          picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                              @Override
                              public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                                 String minuteString = "0";
+                                 if (minute < 10) {
+                                     minuteString+= minute;
+                                 }
                                  if (hourOfDay < 13) {
-                                     dueTime.setText(hourOfDay + ":" + minute + " AM");
+                                     dueTime.setText(hourOfDay + ":" + minuteString+ " AM");
                                  } else {
-                                     dueTime.setText(hourOfDay - 12 + ":" + minute + " PM");
+                                     dueTime.setText(hourOfDay - 12 + ":" + minuteString + " PM");
                                  }
                                  Log.v(TAG, "Changed");
                              }
