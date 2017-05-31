@@ -69,6 +69,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 // Handle "Tasks Notification"
 
+
+
             } else if (notificationTitle.equalsIgnoreCase("announcement")) {
 
                 // Handle "Announcement Notification"

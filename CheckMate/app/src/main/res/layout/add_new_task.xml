@@ -13,11 +13,13 @@
         android:layout_marginBottom="@dimen/spacing_small"
         >
 
-        <EditText android:id="@+id/task_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textCapWords"
-        android:hint="Title" />
+        <EditText
+            android:id="@+id/task_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords"
+            android:hint="Title"
+            />
 
     </android.support.design.widget.TextInputLayout>
 

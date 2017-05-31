@@ -159,41 +159,52 @@ public class ShoppingListFragment extends Fragment {
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
 
                     // Get the user input
                     String shoppingListName = input.getText().toString();
 
-                    // Establish connection and set "shoppingLists" as base URL
-                    DatabaseReference ref = FirebaseDatabase.getInstance()
-                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
+                    // Validate the user input
+                    // Make sure it is not empty
+                    if (shoppingListName.length() != 0) {
 
-                    // Create a new shopping list with an unique ID
-                    DatabaseReference newShoppingList = ref.push();
 
-                    // Get ID of this shopping list
-                    String shoppingListID = newShoppingList.getKey();
+                        // Establish connection and set "shoppingLists" as base URL
+                        DatabaseReference ref = FirebaseDatabase.getInstance()
+                                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName + "/shoppingLists");
 
-                    // Get current date
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
-                    String currentDate = simpleDateFormat.format(new Date());
+                        // Create a new shopping list with an unique ID
+                        DatabaseReference newShoppingList = ref.push();
 
-                    String ownerID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
-                    String ownerName = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
+                        // Get ID of this shopping list
+                        String shoppingListID = newShoppingList.getKey();
 
-                    // Create a new shopping list object
-                    ShoppingListData mShoppingList = new ShoppingListData(shoppingListID, shoppingListName, ownerID, ownerName, 0, 0, currentDate);
+                        // Get current date
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                        String currentDate = simpleDateFormat.format(new Date());
 
-                    newShoppingList.setValue(mShoppingList);
+                        String ownerID = sessionManager.getUserDetails().get(SessionManager.KEY_USER_ID);
+                        String ownerName = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
 
-                    // Inform the user
-                    Toast.makeText(getActivity(), "New shopping list added", Toast.LENGTH_SHORT).show();
+                        // Create a new shopping list object
+                        ShoppingListData mShoppingList = new ShoppingListData(shoppingListID, shoppingListName, ownerID, ownerName, 0, 0, currentDate);
 
-                    // Send notification to group members
-                    // P1: group name
-                    // P2: message
-                    sendShoppingNotificationToGroup(groupName, ownerName + " just added a new shopping list called \"" +
-                            shoppingListName + "\".");
+                        newShoppingList.setValue(mShoppingList);
+
+                        // Inform the user
+                        Toast.makeText(getActivity(), "New shopping list added", Toast.LENGTH_SHORT).show();
+
+                        // Send notification to group members
+                        // P1: group name
+                        // P2: message
+                        sendShoppingNotificationToGroup(groupName, ownerName + " just added a new shopping list called \"" +
+                                shoppingListName + "\".");
+
+                    } else {
+                        // Inform the user
+                        Toast.makeText(getActivity(), "Shopping list name must be non-empty", Toast.LENGTH_SHORT).show();
+                    }
+
+                    dialog.dismiss();
                 }
             });
 
