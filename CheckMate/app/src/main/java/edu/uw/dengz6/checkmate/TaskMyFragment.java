@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -64,33 +62,6 @@ public class TaskMyFragment extends Fragment {
         // Get root view so we can use it to find its child views later
         View rootView = inflater.inflate(R.layout.fragment_all_tasks, container, false);
 
-        FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_all_tasks);
-
-        fabAllTasks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        fabAllTasks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
-
-                // Create a dialog and ask the user for input
-                DialogFragment AddNewTaskFragment = TaskAllFragment.AddNewTaskFragment.newInstance();
-                AddNewTaskFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Task");
-            }
-        });
-
-        // Progress dialog
-        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
-                R.style.AppTheme_Dark_Dialog);
-        progressDialog.setMessage("Retrieving data...");
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
-
         adapter = new TaskAdapter(getActivity(), tasks);
         // Attach the adapter to a ListView
         ListView listView = (ListView) rootView.findViewById(R.id.all_tasks_list_view);
@@ -106,6 +77,13 @@ public class TaskMyFragment extends Fragment {
                 return false;
             }
         });
+
+        // Progress dialog
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
 
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
