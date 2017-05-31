@@ -392,7 +392,7 @@ public class TaskAllFragment extends Fragment {
                         String createdOn = dt.format(new Date());
                         String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
                         String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
-                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], false, taskID));
+                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], assigneeId[0], false, taskID));
 
 
                         final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,22 +54,20 @@ public class TaskManageFragment extends DialogFragment {
         final DatabaseReference ref = FirebaseDatabase.getInstance()
                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" + groupName);
 
+        final DatabaseReference tasksRef = ref.child("tasks").child(taskID);
         // Set up the buttons
         builder.setPositiveButton("Mark Completed", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-
-                final DatabaseReference tasksRef = ref.child("tasks").child(taskID);
-
                 // Retrieve the tasks and update its "isCompleted" field
                 tasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         tasksRef.child("isCompleted").setValue(true);
+                        TaskData taskData = dataSnapshot.getValue(TaskData.class);
 
                         // Add the updated total to "tasksCompleted" under that user
-                        final DatabaseReference totalTasksRef = ref.child("users").child(userID).child("tasksCompleted");
+                        final DatabaseReference totalTasksRef = ref.child("users").child(taskData.assigneeID).child("tasksCompleted");
                         totalTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -97,22 +96,33 @@ public class TaskManageFragment extends DialogFragment {
         builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // delete the task
-                ref.child("tasks").child(taskID).removeValue();
-
-                // un-assign the task from the user data
-                final DatabaseReference totalTasksAssignedRef = ref.child("users").child(userID).child("tasksAssigned");
-                totalTasksAssignedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                tasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        totalTasksAssignedRef.setValue(((Long) dataSnapshot.getValue()).intValue() - 1);
-                    }
+                        TaskData taskData = dataSnapshot.getValue(TaskData.class);
+                        // un-assign the task from the user data
+                        Log.v("!!!!!", taskData.assigneeID);
+                        final DatabaseReference totalTasksAssignedRef = ref.child("users").child(taskData.assigneeID).child("tasksAssigned");
+                        totalTasksAssignedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                totalTasksAssignedRef.setValue(((Long) dataSnapshot.getValue()).intValue() - 1);
+                            }
 
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
+                // delete the task
+                ref.child("tasks").child(taskID).removeValue();
+
                 // Inform the user
                 Toast.makeText(getActivity(), "Task Deleted", Toast.LENGTH_SHORT).show();
                 // Close the dialog
