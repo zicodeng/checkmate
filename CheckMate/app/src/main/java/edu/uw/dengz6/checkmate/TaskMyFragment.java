@@ -72,8 +72,8 @@ public class TaskMyFragment extends Fragment {
                 String taskID = tasks.get(position).taskID;
                 // Create a dialog and ask the user to
                 // either delete the task or mark it as completed
-                DialogFragment taskmanageFragment = TaskManageFragment.newInstance(taskID);
-                taskmanageFragment.show(((FragmentActivity) getContext()).getSupportFragmentManager(), "Manage_Task");
+                DialogFragment taskManageFragment = TaskManageFragment.newInstance(taskID);
+                taskManageFragment.show(((FragmentActivity) getContext()).getSupportFragmentManager(), "Manage_Task");
                 return false;
             }
         });

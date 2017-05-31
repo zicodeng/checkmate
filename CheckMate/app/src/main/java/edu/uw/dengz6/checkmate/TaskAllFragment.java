@@ -16,15 +16,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
+import android.widget.PopupMenu;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -169,19 +169,24 @@ public class TaskAllFragment extends Fragment {
             // Set up the input
             final EditText taskTitle = (EditText) viewInflated.findViewById(R.id.task_title);
             final EditText taskDetail = (EditText) viewInflated.findViewById(R.id.task_detail);
+            final EditText assigneeInput = (EditText)viewInflated.findViewById(R.id.task_assignee);
+            final PopupMenu menu = new PopupMenu(getContext(), viewInflated);
             DatabaseReference ref = FirebaseDatabase.getInstance()
                     .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
                             userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users");
-            final List<CharSequence> users = new ArrayList<>();
-            final List<String> usersID = new ArrayList<>();
+
+            final Map<String, String> storedOption = new HashMap();
+
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
                     for (Map.Entry<String, Object> entry : data.entrySet()) {
                         Map singleUser = (Map) entry.getValue();
-                        users.add((String) singleUser.get("name"));
-                        usersID.add(entry.getKey());
+                        String userName = (String) singleUser.get("name");
+                        String userID = entry.getKey();
+                        menu.getMenu().add(userName);
+                        storedOption.put(userName, userID);
                     }
                 }
 
@@ -193,29 +198,45 @@ public class TaskAllFragment extends Fragment {
                 ;
             });
 
-            //Set spinner and drop down list
-            final String[] assignee = {""};
-            final String[] assigneeId = {""};
-            final Spinner spinner = (Spinner) viewInflated.findViewById(R.id.mySpinner);
-            final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, users);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-            spinner.setAdapter(adapter);
-            //TODO: THIS FUNCTION IS NEVER CALLED ???!
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // disable keyboard input for popup menu
+            assigneeInput.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    assignee[0] = (String) parent.getItemAtPosition(position);
-                    assigneeId[0] = usersID.get(position);
-                    Log.v(TAG, usersID.get(position));
-
+                public void onClick(View v) {
+                    menu.show();
                 }
-
+            });
+            assigneeInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        menu.show();
+                    }
+                }
+            });
+            assigneeInput.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    menu.show();
+                    return true;
                 }
             });
 
+            //Set popup and drop down list
+            final String[] assignee = new String[1];
+            final String[] assigneeId = new String[1];
+
+            //handle menu selection
+            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Log.v(TAG, "Item Selected: " + item.toString());
+                    storedOption.get(item.toString());
+                    assignee[0] = item.toString();
+                    assigneeId[0] = storedOption.get(item.toString());
+                    assigneeInput.setText(item.toString());
+                    return true;
+                }
+            });
 
             //Time picker
             final EditText dueTime = (EditText) viewInflated.findViewById(R.id.task_due_time);
@@ -358,17 +379,11 @@ public class TaskAllFragment extends Fragment {
                     String createdOn = dt.format(new Date());
                     String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
                     String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
-                    mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assigner, false, taskID));
-
-
-                    //TODO: Fix listener bug, currently use assigner as the assignee
-//                    final DatabaseReference totalTasksref = FirebaseDatabase.getInstance()
-//                            .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-//                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + assigneeId[0] + "/totalTasks");
+                    mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], false, taskID));
 
                     final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
                             .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
-                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + userInfo.get(SessionManager.KEY_USER_ID) + "/tasksAssigned");
+                                    userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" + assigneeId[0] + "/tasksAssigned");
 
                     tasksAssignedRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
