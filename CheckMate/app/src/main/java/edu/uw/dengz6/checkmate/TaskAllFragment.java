@@ -133,11 +133,9 @@ public class TaskAllFragment extends Fragment {
                             tasks.add(task);
                         }
                     }
-
-                    progressDialog.dismiss();
-
                     adapter.notifyDataSetChanged();
                 }
+                progressDialog.dismiss();
             }
 
             @Override
