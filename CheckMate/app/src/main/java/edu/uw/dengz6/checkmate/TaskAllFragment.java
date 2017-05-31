@@ -87,9 +87,11 @@ public class TaskAllFragment extends Fragment {
         });
 
         adapter = new TaskAdapter(getActivity(), tasks);
+
         // Attach the adapter to a ListView
         ListView listView = (ListView) rootView.findViewById(R.id.all_tasks_list_view);
         listView.setAdapter(adapter);
+
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -328,6 +330,7 @@ public class TaskAllFragment extends Fragment {
 
                              }
                          });
+
                          datePickerDialog.show();
                          Button button = (Button) datePickerDialog.findViewById(R.id.button3);
                          button.setOnClickListener(new View.OnClickListener() {
@@ -398,7 +401,6 @@ public class TaskAllFragment extends Fragment {
                         String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
                         mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], false, taskID));
 
-
                         final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
                                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
                                         userInfo.get(SessionManager.KEY_GROUP_NAME) + "/users/" +
@@ -419,6 +421,14 @@ public class TaskAllFragment extends Fragment {
 
                         Toast.makeText(getActivity(), "New task added", Toast.LENGTH_SHORT).show();
 
+                        String groupName = manager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+
+                        // Send notification to group members
+                        // P1: group name
+                        // P2: message
+                        sendTasksNotificationToGroup(groupName, assigner + " assigned a task to " +
+                                 assignee + ".");
+
                     } else {
                         Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
                     }
@@ -436,5 +446,22 @@ public class TaskAllFragment extends Fragment {
 
             return builder.create();
         }
+    }
+
+    public static void sendTasksNotificationToGroup(String groupName, String message) {
+
+        // Create a shoppingNotification field
+        // Our Node.js server will take this field as entry to send notification to users belong to this group
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/notificationRequests");
+
+        Map notification = new HashMap<>();
+        notification.put("groupName", groupName);
+        notification.put("message", message);
+
+        // Tell server this is a shopping notification
+        notification.put("category", "Tasks");
+
+        ref.push().setValue(notification);
     }
 }
