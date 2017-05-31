@@ -69,8 +69,9 @@ public class AnnouncementFragment extends Fragment {
         announcementRecyclerView = (RecyclerView) rootView.findViewById(R.id.announcementRecyclerView);
 
         announcementRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter = new AnnouncementAdapter(getActivity(), announcements);
         announcementRecyclerView.setAdapter(adapter);
-        
+
         final SessionManager manager = new SessionManager(getActivity());
 
         groupName = manager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
@@ -90,6 +91,7 @@ public class AnnouncementFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 announcements.clear();
+
                 for (DataSnapshot announcementSnapshot: dataSnapshot.getChildren()) {
                     //handle each task
                     AnnouncementData announcement = announcementSnapshot.getValue(AnnouncementData.class);
@@ -98,7 +100,7 @@ public class AnnouncementFragment extends Fragment {
 
                 progressDialog.dismiss();
 
-                adapter = new AnnouncementAdapter(getActivity(), announcements);
+                adapter.notifyDataSetChanged();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -165,7 +167,7 @@ public class AnnouncementFragment extends Fragment {
                     String getTitle = title.getText().toString();
                     String content = textContent.getText().toString();
 
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
                     String currentTime = simpleDateFormat.format(new Date());
                     String assigner = sessionManager.getUserDetails().get(SessionManager.KEY_NAME);
                     String announcementID = mAnnouncement.getKey();

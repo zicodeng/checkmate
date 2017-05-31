@@ -15,6 +15,7 @@
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/title_text_size"
         android:text="Announcement Title"
+        android:textStyle="bold"
         />
 
     <TextView
