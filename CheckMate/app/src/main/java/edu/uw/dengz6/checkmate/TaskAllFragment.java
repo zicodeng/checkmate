@@ -76,30 +76,15 @@ public class TaskAllFragment extends Fragment {
 
         FloatingActionButton fabAllTasks = (FloatingActionButton) rootView.findViewById(R.id.fab_all_tasks);
 
-        fabAllTasks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         fabAllTasks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Add a New Task", Toast.LENGTH_SHORT).show();
-
                 // Create a dialog and ask the user for input
                 DialogFragment AddNewTaskFragment = TaskAllFragment.AddNewTaskFragment.newInstance();
                 AddNewTaskFragment.show(getActivity().getSupportFragmentManager(), "Add_New_Task");
             }
         });
-
-        // Progress dialog
-        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
-                R.style.AppTheme_Dark_Dialog);
-        progressDialog.setMessage("Retrieving data...");
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
 
         adapter = new TaskAdapter(getActivity(), tasks);
         // Attach the adapter to a ListView
@@ -116,6 +101,13 @@ public class TaskAllFragment extends Fragment {
                 return false;
             }
         });
+
+        // Progress dialog
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
 
         manager = new SessionManager(getContext());
         userInfo = manager.getUserDetails();
@@ -256,6 +248,34 @@ public class TaskAllFragment extends Fragment {
                      }
                  }
              });
+            dueTime.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    final Dialog timePickerDialog = new Dialog(getContext());
+                    timePickerDialog.setContentView(R.layout.custom_time_picker);
+                    TimePicker picker = (TimePicker) timePickerDialog.findViewById(R.id.timePicker1);
+                    picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+                        @Override
+                        public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                            if (hourOfDay < 13) {
+                                dueTime.setText(hourOfDay + ":" + minute + " AM");
+                            } else {
+                                dueTime.setText(hourOfDay - 12 + ":" + minute + " PM");
+                            }
+                            Log.v(TAG, "Changed");
+                        }
+                    });
+                    timePickerDialog.show();
+                    Button button = (Button) timePickerDialog.findViewById(R.id.button2);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            timePickerDialog.dismiss();
+                        }
+                    });
+                }
+            });
 
             //Date picker
             final EditText dueDate = (EditText) viewInflated.findViewById(R.id.task_due_date);
@@ -288,6 +308,36 @@ public class TaskAllFragment extends Fragment {
                      }
                  }
              });
+
+            dueDate.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    final Dialog datePickerDialog = new Dialog(getContext());
+                    datePickerDialog.setContentView(R.layout.custom_date_picker);
+                    DatePicker datePicker = (DatePicker) datePickerDialog.findViewById(R.id.datePicker1);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+
+                        @Override
+                        public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                            dueDate.setText((month + 1) + "/" + dayOfMonth + "/" + year);
+                            Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
+
+                        }
+                    });
+                    datePickerDialog.show();
+                    Button button = (Button) datePickerDialog.findViewById(R.id.button3);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            datePickerDialog.dismiss();
+                        }
+                    });
+                }
+            });
+
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             builder.setView(viewInflated);
 
