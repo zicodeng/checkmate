@@ -29,7 +29,7 @@
         android:id="@+id/shopping_list_owner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/spacing_small"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/shopping_list_created_date"
         android:text="Owner"

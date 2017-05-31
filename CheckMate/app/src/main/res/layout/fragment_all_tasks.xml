@@ -10,9 +10,9 @@
         android:id="@+id/all_tasks_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:paddingBottom="20dp"
-        android:paddingTop="10dp"></ListView>
+        android:divider="@android:color/transparent"
+        android:dividerHeight="@dimen/spacing_extra_small"
+        />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_all_tasks"
