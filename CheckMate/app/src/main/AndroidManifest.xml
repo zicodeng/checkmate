@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.uw.dengz6.checkmate">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -56,10 +56,9 @@
         </service>
 
         <receiver
-            android:name=".MyAlarmReceiver"
+            android:name=".ReminderBroadcastReceiver"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

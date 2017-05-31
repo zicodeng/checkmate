@@ -53,7 +53,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Finish the registration screen and return to the Login activity
-                finish();
+                startActivity(new Intent(SignupActivity.this, LoginActivity.class));
             }
         });
         sessionManager = new SessionManager(this);
@@ -142,44 +142,44 @@ public class SignupActivity extends AppCompatActivity {
                     final Group group = new Group(groupName);
                     final DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName);
                     new android.os.Handler().postDelayed(
-                        new Runnable() {
-                            public void run() {
-                                ref1.setValue(group, new DatabaseReference.CompletionListener() {
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) { //check for errors while pushing
-                                        if (databaseError != null) {
-                                            Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
-                                        } else {
-                                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
+                            new Runnable() {
+                                public void run() {
+                                    ref1.setValue(group, new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) { //check for errors while pushing
+                                            if (databaseError != null) {
+                                                Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
+                                            } else {
+                                                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
 
-                                            // Date of creation
-                                            // Get current date
-                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
-                                            String currentDate = simpleDateFormat.format(new Date());
+                                                // Date of creation
+                                                // Get current date
+                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                                                String currentDate = simpleDateFormat.format(new Date());
 
-                                            User user = new User(name, email, password, currentDate);
-                                            DatabaseReference userPush = userRef.push();
-                                            // Generate a random value as user ID
-                                            final String userID = userPush.getKey();
+                                                User user = new User(name, email, password, currentDate);
+                                                DatabaseReference userPush = userRef.push();
+                                                // Generate a random value as user ID
+                                                final String userID = userPush.getKey();
 
-                                            userPush.setValue(user, new DatabaseReference.CompletionListener() {
-                                                @Override
-                                                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                                    if (databaseError != null) {
-                                                        Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
-                                                    }else{ //if there are no errors then we proceed to adding people into the group
-                                                        // On complete call either onSignupSuccess or onSignupFailed
-                                                        // depending on success
-                                                        onSignupSuccess(groupName, email, name, userID);
+                                                userPush.setValue(user, new DatabaseReference.CompletionListener() {
+                                                    @Override
+                                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                        if (databaseError != null) {
+                                                            Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
+                                                        }else{ //if there are no errors then we proceed to adding people into the group
+                                                            // On complete call either onSignupSuccess or onSignupFailed
+                                                            // depending on success
+                                                            onSignupSuccess(groupName, email, name, userID);
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
+                                            }
+                                            progressDialog.dismiss();
                                         }
-                                        progressDialog.dismiss();
-                                    }
-                                });
-                            }
-                        }, 1500);
+                                    });
+                                }
+                            }, 1500);
                 }
             }
 
