@@ -291,10 +291,16 @@ public class TaskAllFragment extends Fragment {
                     picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                         @Override
                         public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                            if (hourOfDay < 13) {
-                                dueTime.setText(hourOfDay + ":" + minute + " AM");
+                            String minuteStr;
+                            if (minute < 10) {
+                                minuteStr = "0" + minute;
                             } else {
-                                dueTime.setText(hourOfDay - 12 + ":" + minute + " PM");
+                                minuteStr = "" + minute;
+                            }
+                            if (hourOfDay < 13) {
+                                dueTime.setText(hourOfDay + ":" + minuteStr + " AM");
+                            } else {
+                                dueTime.setText(hourOfDay - 12 + ":" + minuteStr + " PM");
                             }
                             Log.v(TAG, "Changed");
                         }
@@ -399,7 +405,7 @@ public class TaskAllFragment extends Fragment {
                         String createdOn = dt.format(new Date());
                         String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
                         String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
-                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], false, taskID));
+                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], assigneeId[0], false, taskID));
 
                         final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
                                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +
@@ -419,7 +425,7 @@ public class TaskAllFragment extends Fragment {
                             }
                         });
 
-                        Toast.makeText(getActivity(), "New task added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "New Task Added", Toast.LENGTH_SHORT).show();
 
                         String groupName = manager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 

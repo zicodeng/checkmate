@@ -1,11 +1,12 @@
 package edu.uw.dengz6.checkmate;
 
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -118,13 +119,19 @@ public class TaskMyFragment extends Fragment {
                             if(currentTime > timeDue){
                                 Log.v(TAG, "passed due time");
                             }else {
-                                alarmMgr = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
-                                Intent intent = new Intent(getContext(), MainActivity.class);
-                                alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
+
+                                alarmMgr = (AlarmManager)getContext().getSystemService(Activity.ALARM_SERVICE);
+                                Intent intent = new Intent(getContext(), ReminderBroadcastReceiver.class);
+                                alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                                 // setRepeating() lets you specify a precise custom interval--in this case,
                                 // 5 minutes.
-                                alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+                                if (Build.VERSION.SDK_INT < 19) {
+                                    alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+                                } else {
+                                    alarmMgr.setExact(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
+                                }
+
                             }
                             tasks.add(task);
                         }

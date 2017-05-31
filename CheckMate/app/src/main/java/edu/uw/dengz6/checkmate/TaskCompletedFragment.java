@@ -168,8 +168,8 @@ public class TaskCompletedFragment extends Fragment {
             String since = "Since: " + item.since;
 
             viewHolder.txtUserName.setText(userName);
-            viewHolder.txtTotalAssigned.setText("Total Assigned Tasks: " + totalAssigned);
-            viewHolder.txtTotalCompleted.setText("Total Completed Tasks: " + totalCompleted);
+            viewHolder.txtTotalAssigned.setText("Total Tasks Assigned : " + totalAssigned);
+            viewHolder.txtTotalCompleted.setText("Total Tasks Completed : " + totalCompleted);
             viewHolder.txtSince.setText(since);
             viewHolder.txtTotalCompletedFocus.setText("" + totalCompleted);
         }
