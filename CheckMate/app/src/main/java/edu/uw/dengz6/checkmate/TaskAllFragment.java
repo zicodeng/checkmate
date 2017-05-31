@@ -270,6 +270,11 @@ public class TaskAllFragment extends Fragment {
                              }
                          });
                          timePickerDialog.show();
+
+                         // set default due time to be now
+                         SimpleDateFormat dt = new SimpleDateFormat("hh:mm aaa");
+                         dueTime.setText(dt.format(new Date()));
+
                          Button button = (Button) timePickerDialog.findViewById(R.id.button2);
                          button.setOnClickListener(new View.OnClickListener() {
                              @Override
@@ -306,6 +311,11 @@ public class TaskAllFragment extends Fragment {
                         }
                     });
                     timePickerDialog.show();
+
+                    // set default due time to be now
+                    SimpleDateFormat dt = new SimpleDateFormat("hh:mm aaa");
+                    dueTime.setText(dt.format(new Date()));
+
                     Button button = (Button) timePickerDialog.findViewById(R.id.button2);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -338,6 +348,8 @@ public class TaskAllFragment extends Fragment {
                          });
 
                          datePickerDialog.show();
+                         //set the default due date
+                         dueDate.setText((calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR));
                          Button button = (Button) datePickerDialog.findViewById(R.id.button3);
                          button.setOnClickListener(new View.OnClickListener() {
                              @Override
@@ -369,6 +381,8 @@ public class TaskAllFragment extends Fragment {
                         }
                     });
                     datePickerDialog.show();
+                    //set the default due date
+                    dueDate.setText((calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR));
                     Button button = (Button) datePickerDialog.findViewById(R.id.button3);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
