@@ -60,6 +60,8 @@ public class SignupActivity extends AppCompatActivity {
 
         if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getQueryParameter("group_name") != null) {
             _groupText.setText(getIntent().getData().getQueryParameter("group_name"));
+            _emailText.setText(getIntent().getData().getQueryParameter("email"));
+            _signupButton.setText("JOIN GROUP");
         }
 
         if(sessionManager.isLoggedIn()){
