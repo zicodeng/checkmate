@@ -148,11 +148,21 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 return true; //handled
+
             case R.id.action_add_member:
                 String groupName = session.getUserDetails().get(session.KEY_GROUP_NAME);
                 Intent addNewMemberIntent = new Intent(getApplicationContext(), AddMembersActivity.class);
                 addNewMemberIntent.putExtra("group_id", groupName);
                 startActivityForResult(addNewMemberIntent, 0);
+                return true;
+
+            case R.id.action_settings:
+
+                Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(settingsIntent);
+
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -433,7 +433,7 @@ public class TaskAllFragment extends Fragment {
                         // P1: group name
                         // P2: message
                         sendTasksNotificationToGroup(groupName, assigner + " assigned a task to " +
-                                 assignee + ".");
+                                 assignee[0] + ".");
 
                     } else {
                         Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
