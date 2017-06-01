@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 /**
@@ -419,7 +420,9 @@ public class TaskAllFragment extends Fragment {
                         String createdOn = dt.format(new Date());
                         String dueOn = dueDate.getText().toString() + " " + dueTime.getText().toString();
                         String assigner = TaskAllFragment.userInfo.get(SessionManager.KEY_NAME);
-                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], assigneeId[0], false, taskID));
+                        Random rand = new Random();
+                        int id = rand.nextInt(Integer.MAX_VALUE) + 1;
+                        mTask.setValue(new TaskData(title, detail, dueOn, createdOn, assigner, assignee[0], assigneeId[0], false, taskID, id));
 
                         final DatabaseReference tasksAssignedRef = FirebaseDatabase.getInstance()
                                 .getReferenceFromUrl("https://checkmate-d2c41.firebaseio.com/groups/" +

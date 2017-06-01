@@ -123,8 +123,7 @@ public class TaskMyFragment extends Fragment {
                             }else if((timeDue - currentTime) >= 0){
                                 setAlarms(task, timeDue);
                             }else {
-                                //overdue here, what to do ?
-
+                                setAlarms(task, System.currentTimeMillis());
                             }
                             tasks.add(task);
                         }
@@ -147,7 +146,8 @@ public class TaskMyFragment extends Fragment {
         intent.putExtra("task_name", task.title);
         intent.putExtra("task_due", task.dueOn);
         intent.putExtra("task_assigner", task.assigner);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        intent.putExtra("task_id", task.ID);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), task.ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (Build.VERSION.SDK_INT < 19) {
             alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
         } else {

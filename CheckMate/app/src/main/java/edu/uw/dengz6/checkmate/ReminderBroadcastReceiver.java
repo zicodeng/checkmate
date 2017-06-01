@@ -36,6 +36,7 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            intent1.putExtra("task_id", intent.getExtras().getInt("task_id"));
             intent1.putExtra("task_name", intent.getExtras().getString("title"));
             intent1.putExtra("task_due", intent.getExtras().getString("due"));
             intent1.putExtra("task_assigner", intent.getExtras().getString("assigner"));
@@ -53,17 +54,19 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
             String name = "";
             String dueTime = "";
             String assigner = "";
+            int id = 0;
             if (intent.getExtras() != null) {
                 name = intent.getExtras().getString("task_name");
                 dueTime = intent.getExtras().getString("task_due");
                 assigner = intent.getExtras().getString("task_assigner");
+                id = intent.getIntExtra("task_id", 0);
             }
-            int id = (int) System.currentTimeMillis();
 
             //Snooze intent
             Intent snoozeReceive = new Intent(context, ReminderBroadcastReceiver.class);
             snoozeReceive.putExtra("id", id);
             snoozeReceive.putExtra("due", dueTime);
+            snoozeReceive.putExtra("task_id", id);
             snoozeReceive.putExtra("title", name);
             snoozeReceive.putExtra("assigner", assigner);
             snoozeReceive.setAction("Snooze");
@@ -75,14 +78,35 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
             dismiss.setAction("Dismiss");
             dismiss.putExtra("due", dueTime);
             PendingIntent pendingIntentDismiss = PendingIntent.getBroadcast(context, 12346, dismiss, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_annoucement)
-                    .setContentTitle(name + " is going to be due soon")
-                    .setContentText("It is due on " + dueTime + ".\nTask is assigned by " + assigner)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .addAction(R.drawable.ic_menu_manage, "Snooze", pendingIntentSnooze)
-                    .addAction(R.drawable.ic_menu_send, "Dismiss", pendingIntentDismiss);
+            NotificationCompat.Builder builder;
+            SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+            long timeDue = 0;
+            try {
+                timeDue = dt.parse(dueTime).getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if(timeDue >= System.currentTimeMillis()) {
+                builder = new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_annoucement)
+                        .setContentTitle(name + " is going to be due soon")
+                        .setContentText("It is due on " + dueTime + ".\nTask is assigned by " + assigner)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .addAction(R.drawable.ic_snooze, "Snooze", pendingIntentSnooze)
+                        .addAction(R.drawable.ic_exit, "Dismiss", pendingIntentDismiss);
+            }else if((System.currentTimeMillis() + 600000) < timeDue){
+                builder = new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_time)
+                        .setContentTitle(name + " is going to be due in less than 24 hour")
+                        .setContentText("It is due on " + dueTime)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+            }else{
+                builder = new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_diss)
+                        .setContentTitle(name + " is overdue, but it has yet been marked completed")
+                        .setContentText("Have you completed this task yet?")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+            }
 
 
             Intent intentToFire = new Intent(context, MainActivity.class);

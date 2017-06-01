@@ -10,12 +10,13 @@ public class TaskData {
     public String assigneeID;
     public boolean isCompleted;
     public String taskID;
+    public int ID;
 
     public TaskData() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public TaskData(String title, String detail, String dueOn, String createdOn, String assigner, String assignee, String assigneeID, boolean isCompleted, String taskID) {
+    public TaskData(String title, String detail, String dueOn, String createdOn, String assigner, String assignee, String assigneeID, boolean isCompleted, String taskID, int Id) {
         this.title = title;
         this.detail = detail;
         this.dueOn = dueOn;
@@ -25,5 +26,6 @@ public class TaskData {
         this.assigneeID = assigneeID;
         this.isCompleted = isCompleted;
         this.taskID = taskID;
+        this.ID = Id;
     }
 }
