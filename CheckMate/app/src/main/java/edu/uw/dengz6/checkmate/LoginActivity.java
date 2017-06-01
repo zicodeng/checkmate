@@ -83,13 +83,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChild(groupName)){
-                    Toast.makeText(LoginActivity.this, "group found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Group Found", Toast.LENGTH_SHORT).show();
                     DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
                     userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(lookForUser((Map<String,Object>) dataSnapshot.getValue(), email, password, groupName)){
-                                Toast.makeText(LoginActivity.this, "successful authentication ", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Successful Authentication ", Toast.LENGTH_SHORT).show();
                                 new android.os.Handler().postDelayed(
                                         new Runnable() {
                                             public void run() {
@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
                 }else{
                     progressDialog.dismiss();
-                    Toast.makeText(LoginActivity.this, "No group found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "No Group Found", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Login Failed", Toast.LENGTH_LONG).show();
 
         _loginButton.setEnabled(true);
     }
