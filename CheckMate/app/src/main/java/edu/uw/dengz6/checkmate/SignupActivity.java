@@ -36,6 +36,8 @@ public class SignupActivity extends AppCompatActivity {
     @InjectView(R.id.link_login) TextView _loginLink;
     @InjectView(R.id.input_group_name) TextView _groupText;
 
+    private boolean isJoiningGroup;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,7 @@ public class SignupActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
 
         if(getIntent() != null && getIntent().getData() != null && getIntent().getData().getQueryParameter("group_name") != null) {
+            isJoiningGroup = true;
             _groupText.setText(getIntent().getData().getQueryParameter("group_name"));
             _emailText.setText(getIntent().getData().getQueryParameter("email"));
             _signupButton.setText("JOIN GROUP");
@@ -82,7 +85,12 @@ public class SignupActivity extends AppCompatActivity {
         final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Creating Group...");
+
+        if (isJoiningGroup)
+            progressDialog.setMessage("Joining Group...");
+        else
+            progressDialog.setMessage("Creating Group...");
+
         progressDialog.show();
 
         final String name = _nameText.getText().toString();
@@ -95,57 +103,61 @@ public class SignupActivity extends AppCompatActivity {
         groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild(groupName)){
-                    new android.os.Handler().postDelayed(
-                            new Runnable() {
-                                public void run() {
+                if (dataSnapshot.hasChild(groupName)) {
+                    // If the group already exists and user is not joining the existing group, prompt the user to pick a different group name
+                    if (!isJoiningGroup) {
+                        Toast.makeText(SignupActivity.this, "Group Already Exists",
+                                Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    } else {
+                        new android.os.Handler().postDelayed(
+                                new Runnable() {
+                                    public void run() {
+                                        final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
 
-                                    // If the group already exists, prompt the user to pick a different group name
-                                    Toast.makeText(SignupActivity.this, "Group name already exists",
-                                            Toast.LENGTH_SHORT).show();
+                                        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if (lookForUser((Map<String, Object>) dataSnapshot.getValue(), email)) {
+                                                    Toast.makeText(SignupActivity.this, "Email has been picked, did you mean to log in instead?", Toast.LENGTH_SHORT).show();
+                                                    progressDialog.dismiss();
+                                                } else {
+                                                    // Date of creation
+                                                    // Get current date
+                                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
+                                                    String currentDate = simpleDateFormat.format(new Date());
 
-                                    final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName).child("users");
-
-                                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if(lookForUser((Map<String,Object>) dataSnapshot.getValue(), email)){
-                                                Toast.makeText(SignupActivity.this, "Email has been picked, did you mean to log in instead?", Toast.LENGTH_SHORT).show();
-                                                progressDialog.dismiss();
-                                            }else{
-                                                // Date of creation
-                                                // Get current date
-                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
-                                                String currentDate = simpleDateFormat.format(new Date());
-
-                                                User user = new User(name, email, password, currentDate);
-                                                DatabaseReference userPush = usersRef.push();
-                                                // Generate a random value as user ID
-                                                final String userID = userPush.getKey();
-                                                userPush.setValue(user, new DatabaseReference.CompletionListener() {
-                                                    @Override
-                                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                                        if (databaseError != null) {
-                                                            Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
-                                                        }else{ //if there are no errors then we proceed to adding people into the group
-                                                            // On complete call either onSignupSuccess or onSignupFailed
-                                                            // depending on success
-                                                            onSignupSuccess(groupName, email, name, userID);
-                                                            progressDialog.dismiss();
+                                                    User user = new User(name, email, password, currentDate);
+                                                    DatabaseReference userPush = usersRef.push();
+                                                    // Generate a random value as user ID
+                                                    final String userID = userPush.getKey();
+                                                    userPush.setValue(user, new DatabaseReference.CompletionListener() {
+                                                        @Override
+                                                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                            if (databaseError != null) {
+                                                                Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
+                                                            } else { //if there are no errors then we proceed to adding people into the group
+                                                                // On complete call either onSignupSuccess or onSignupFailed
+                                                                // depending on success
+                                                                onSignupSuccess(groupName, email, name, userID);
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(SignupActivity.this, "Group Joined",
+                                                                        Toast.LENGTH_SHORT).show();
+                                                            }
                                                         }
-                                                    }
-                                                });
+                                                    });
+                                                }
                                             }
-                                        }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
-                                        }
-                                    });
-                                }
-                            }, 1000);
-                }else{
+                                            }
+                                        });
+                                    }
+                                }, 1000);
+                    }
+                } else {
                     final Group group = new Group(groupName);
                     final DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("groups").child(groupName);
                     new android.os.Handler().postDelayed(
@@ -174,10 +186,12 @@ public class SignupActivity extends AppCompatActivity {
                                                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                                                         if (databaseError != null) {
                                                             Log.v(TAG, "Data could not be saved. " + databaseError.getMessage());
-                                                        }else{ //if there are no errors then we proceed to adding people into the group
+                                                        } else { //if there are no errors then we proceed to adding people into the group
                                                             // On complete call either onSignupSuccess or onSignupFailed
                                                             // depending on success
                                                             onSignupSuccess(groupName, email, name, userID);
+                                                            Toast.makeText(SignupActivity.this, "Group Created",
+                                                                    Toast.LENGTH_SHORT).show();
                                                         }
                                                     }
                                                 });
@@ -189,7 +203,6 @@ public class SignupActivity extends AppCompatActivity {
                             }, 1500);
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -235,7 +248,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signup Failed", Toast.LENGTH_LONG).show();
         _signupButton.setEnabled(true);
     }
 
