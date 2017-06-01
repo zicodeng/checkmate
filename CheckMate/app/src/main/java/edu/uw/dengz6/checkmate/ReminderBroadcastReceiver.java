@@ -2,6 +2,7 @@ package edu.uw.dengz6.checkmate;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -91,7 +92,8 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
                         .setSmallIcon(R.drawable.ic_annoucement)
                         .setContentTitle(name + " is going to be due soon")
                         .setContentText("It is due on " + dueTime + ".\nTask is assigned by " + assigner)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_ALL)
                         .addAction(R.drawable.ic_snooze, "Snooze", pendingIntentSnooze)
                         .addAction(R.drawable.ic_exit, "Dismiss", pendingIntentDismiss);
             }else if((System.currentTimeMillis() + 600000) < timeDue){
@@ -99,13 +101,16 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
                         .setSmallIcon(R.drawable.ic_time)
                         .setContentTitle(name + " is going to be due in less than 24 hour")
                         .setContentText("It is due on " + dueTime)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_ALL);
             }else{
                 builder = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_diss)
                         .setContentTitle(name + " is overdue, but it has yet been marked completed")
                         .setContentText("Have you completed this task yet?")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_ALL);
             }
 
 

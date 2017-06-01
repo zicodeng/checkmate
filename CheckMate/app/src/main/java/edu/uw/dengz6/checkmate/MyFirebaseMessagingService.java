@@ -1,5 +1,6 @@
 package edu.uw.dengz6.checkmate;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -59,6 +60,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_checkmate_logo)
                         .setAutoCancel(true)
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_ALL)
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationBody)
                         .setContentIntent(shoppingPendingIntent);
@@ -87,6 +90,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Build a shopping notification
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_checkmate_logo)
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_ALL)
                         .setAutoCancel(true)
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationBody)
@@ -119,6 +124,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Build a shopping notification
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_checkmate_logo)
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_ALL)
                         .setAutoCancel(true)
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationBody)
