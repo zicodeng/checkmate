@@ -86,7 +86,7 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if(timeDue >= System.currentTimeMillis()) {
+            if(timeDue + 120000 >= System.currentTimeMillis()) {
                 builder = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_annoucement)
                         .setContentTitle(name + " is going to be due soon")
