@@ -1,0 +1,15 @@
+ <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="edu.uw.dengz6.checkmate.TaskMyFragment">
+
+     <ListView
+         android:id="@+id/all_tasks_list_view"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:divider="@android:color/transparent"
+         android:dividerHeight="@dimen/spacing_extra_small"
+      />
+
+</FrameLayout>

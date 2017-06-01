@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context="edu.uw.dengz6.checkmate.SettingsActivity"
+              android:background="@color/colorAccent"
+              android:paddingTop="@dimen/spacing_large"
+    >
+
+    <ImageView
+        app:srcCompat="@drawable/ic_checkmate_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="72dp"
+        android:layout_marginTop="@dimen/spacing_large"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <TextView
+        android:id="@+id/settings_group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Group Name"
+        android:textSize="@dimen/text_size_large"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_large"
+        />
+
+    <TextView
+        android:id="@+id/settings_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="@dimen/text_size_large"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_large"
+        />
+
+    <TextView
+        android:id="@+id/settings_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="@dimen/text_size_large"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_large"
+        />
+
+</LinearLayout>

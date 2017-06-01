@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/spacing_medium"
+    android:layout_marginBottom="@dimen/spacing_extra_small"
+    android:background="@color/white"
+    >
+
+    <TextView
+        android:id="@+id/announcement_item_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/title_text_size"
+        android:text="Announcement Title"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/announcement_item_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/announcement_item_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:text="Description"
+        />
+
+    <TextView
+        android:id="@+id/announcement_created_on"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="Created Date"
+        />
+
+    <TextView
+        android:id="@+id/announcement_created_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/announcement_item_description"
+        android:text="Sender"
+        />
+</RelativeLayout>

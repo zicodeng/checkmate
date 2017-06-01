@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">CheckMate</string>
+    <string name="title_shopping">Shopping</string>
+    <string name="title_tasks">Tasks</string>
+    <string name="title_announcement">Announcement</string>
+
+    <!--All Tasks Fragment-->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!--Dialog-->
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">CANCEL</string>
+
+    <!--Shopping List Detail Activity-->
+    <string name="title_activity_shopping_list_detail">Shopping List Detail</string>
+</resources>
+
