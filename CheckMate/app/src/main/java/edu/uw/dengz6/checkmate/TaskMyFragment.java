@@ -141,7 +141,7 @@ public class TaskMyFragment extends Fragment {
     }
 
     public void setAlarms(TaskData task, long timeDue){
-        alarmMgr = (AlarmManager)getContext().getSystemService(Activity.ALARM_SERVICE);
+        alarmMgr = (AlarmManager)getActivity().getSystemService(Activity.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), ReminderBroadcastReceiver.class);
         intent.putExtra("task_name", task.title);
         intent.putExtra("task_due", task.dueOn);
