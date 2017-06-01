@@ -54,12 +54,15 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
             String name = "";
             String dueTime = "";
             String assigner = "";
+            String flag = "";
             int id = 0;
             if (intent.getExtras() != null) {
                 name = intent.getExtras().getString("task_name");
                 dueTime = intent.getExtras().getString("task_due");
                 assigner = intent.getExtras().getString("task_assigner");
                 id = intent.getIntExtra("task_id", 0);
+                flag = intent.getStringExtra("flag");
+
             }
 
             //Snooze intent
@@ -79,14 +82,13 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
             dismiss.putExtra("due", dueTime);
             PendingIntent pendingIntentDismiss = PendingIntent.getBroadcast(context, 12346, dismiss, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder builder;
-            SimpleDateFormat dt = new SimpleDateFormat("MM/dd/yyyy hh:mm aaa");
-            long timeDue = 0;
-            try {
-                timeDue = dt.parse(dueTime).getTime();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if(timeDue + 120000 >= System.currentTimeMillis()) {
+            if(flag.equals("day")) {
+                builder = new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_time)
+                        .setContentTitle(name + " is going to be due in less than 24 hour")
+                        .setContentText("It is due on " + dueTime)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+            }else if(flag.equals("minutes")){
                 builder = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_annoucement)
                         .setContentTitle(name + " is going to be due soon")
@@ -94,13 +96,9 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .addAction(R.drawable.ic_snooze, "Snooze", pendingIntentSnooze)
                         .addAction(R.drawable.ic_exit, "Dismiss", pendingIntentDismiss);
-            }else if((System.currentTimeMillis() + 600000) < timeDue){
-                builder = new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_time)
-                        .setContentTitle(name + " is going to be due in less than 24 hour")
-                        .setContentText("It is due on " + dueTime)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+
             }else{
+
                 builder = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_diss)
                         .setContentTitle(name + " is overdue, but it has yet been marked completed")

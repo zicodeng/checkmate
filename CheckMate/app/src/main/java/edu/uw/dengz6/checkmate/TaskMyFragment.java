@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +43,8 @@ public class TaskMyFragment extends Fragment {
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
 
+    private Context context;
+
     public TaskMyFragment() {
         // Required empty public constructor
     }
@@ -61,6 +64,8 @@ public class TaskMyFragment extends Fragment {
 
         // Get root view so we can use it to find its child views later
         View rootView = inflater.inflate(R.layout.fragment_my_tasks, container, false);
+
+        context = getActivity().getApplicationContext();
 
         adapter = new TaskAdapter(getActivity(), tasks);
         // Attach the adapter to a ListView
@@ -95,9 +100,9 @@ public class TaskMyFragment extends Fragment {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                adapter.clear();
+                tasks.clear();
                 if (dataSnapshot.getValue() != null) {
-                    adapter.clear();
-                    tasks.clear();
                     for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
                         //handle each task
                         TaskData task = taskSnapshot.getValue(TaskData.class);
@@ -115,15 +120,14 @@ public class TaskMyFragment extends Fragment {
                             //task is due in more than 1 day, remind user in 1 day
                             if((timeDue - currentTime) >= 86400000) {
                                 timeDue = timeDue - 86400000;
-                                setAlarms(task, timeDue);
+                                setAlarms(task, timeDue, "day");
+
+                            }else if((timeDue - currentTime) == 1000 * 60 * 30) {
                                 //task is due within the day, remind the user 10 minutes before
-                            }else if((timeDue - currentTime) >= 1000 * 60 * 10){
-                                timeDue = timeDue - 1000 * 60 * 10;
-                                setAlarms(task, timeDue);
-                            }else if((timeDue - currentTime) >= 0){
-                                setAlarms(task, timeDue);
-                            }else {
-                                setAlarms(task, System.currentTimeMillis());
+                                timeDue = timeDue - 1000 * 60 * 30;
+                                setAlarms(task, timeDue, "minutes");
+                            }else if ((timeDue - currentTime) <= 60 * 1000) {
+                                setAlarms(task, System.currentTimeMillis(), "overdue");
                             }
                             tasks.add(task);
                         }
@@ -140,14 +144,15 @@ public class TaskMyFragment extends Fragment {
         return rootView;
     }
 
-    public void setAlarms(TaskData task, long timeDue){
-        alarmMgr = (AlarmManager)getActivity().getSystemService(Activity.ALARM_SERVICE);
-        Intent intent = new Intent(getContext(), ReminderBroadcastReceiver.class);
+    public void setAlarms(TaskData task, long timeDue, String flag){
+        alarmMgr = (AlarmManager) context.getSystemService(Activity.ALARM_SERVICE);
+        Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
+        intent.putExtra("flag", flag);
         intent.putExtra("task_name", task.title);
         intent.putExtra("task_due", task.dueOn);
         intent.putExtra("task_assigner", task.assigner);
         intent.putExtra("task_id", task.ID);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), task.ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmIntent = PendingIntent.getBroadcast(context, task.ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (Build.VERSION.SDK_INT < 19) {
             alarmMgr.set(AlarmManager.RTC_WAKEUP, timeDue, alarmIntent);
         } else {

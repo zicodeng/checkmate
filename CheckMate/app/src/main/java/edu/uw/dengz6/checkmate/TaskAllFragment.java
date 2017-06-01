@@ -122,9 +122,10 @@ public class TaskAllFragment extends Fragment {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
 
-                    tasks.clear();
+                tasks.clear();
+
+                if (dataSnapshot.getValue() != null) {
 
                     for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
                         //handle each task
@@ -134,8 +135,9 @@ public class TaskAllFragment extends Fragment {
                             tasks.add(task);
                         }
                     }
-                    adapter.notifyDataSetChanged();
                 }
+
+                adapter.notifyDataSetChanged();
                 progressDialog.dismiss();
             }
 
