@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction ft;
     private SessionManager session;
 
+    private String groupName;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -66,9 +68,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Get current group name
         final SessionManager sessionManager = new SessionManager(this);
-        String groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
+        groupName = sessionManager.getUserDetails().get(SessionManager.KEY_GROUP_NAME);
 
-        //Firebase cloud message
+        // Firebase cloud message
+        // Subscribe to this group's notification
         FirebaseMessaging.getInstance().subscribeToTopic("group_" + groupName);
 
         super.onCreate(savedInstanceState);
@@ -144,9 +147,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.logout:
+
+                // Unsubscribe to this group's notification
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("group_" + groupName);
+
                 session.logoutUser();
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
+
                 return true; //handled
 
             case R.id.action_add_member:
